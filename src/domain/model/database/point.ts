@@ -1,5 +1,6 @@
 import { PickType } from '@nestjs/mapped-types';
 import { CommonModel } from '../common/common';
+import { UserModel } from './user';
 
 export interface IPointModel {
   id: number;
@@ -9,6 +10,7 @@ export interface IPointModel {
 
 export class PointModel extends CommonModel implements IPointModel {
   userId: number;
+  user: UserModel;
   point: number;
 }
 

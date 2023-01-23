@@ -1,26 +1,31 @@
 import { PickType } from '@nestjs/swagger';
 import { CommonModel } from '../common/common';
+import { PointModel } from './point';
 
 export interface IPointLogModel {
   id: number;
-  pointId: number;
-  point: number;
+
+  addPoint: number;
   usePoint: number;
   content: string;
   action: string;
+
+  pointId: number;
 }
 
 export class PointLogModel extends CommonModel implements IPointLogModel {
-  pointId: number;
-  point: number;
+  addPoint: number;
   usePoint: number;
   content: string;
   action: string;
+
+  pointId: number;
+  point: PointModel;
 }
 
 export class CreatePointLogModel extends PickType(PointLogModel, [
   'pointId',
-  'point',
+  'addPoint',
   'usePoint',
   'content',
   'action',
