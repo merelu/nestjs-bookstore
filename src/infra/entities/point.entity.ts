@@ -7,14 +7,14 @@ import { User } from './user.entity';
 
 @Entity()
 export class Point extends CommonEntity implements IPointModel {
-  @Column({ type: 'integer', nullable: false, primary: true })
+  @Column({ type: 'integer', nullable: false })
   userId: number;
 
   @OneToOne(() => User, (user) => user.point)
   @JoinColumn({ name: 'user_id' })
   user: UserModel;
 
-  @Column({ type: 'integer' })
+  @Column({ type: 'integer', default: 0 })
   point: number;
 
   @OneToMany(() => PointLog, (pointLog) => pointLog.point)

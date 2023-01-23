@@ -4,5 +4,7 @@ import { EntityManager } from 'typeorm';
 export interface IRoleRepository {
   create(data: CreateRoleModel, conn?: EntityManager): Promise<RoleModel>;
 
-  softDelete(id: number): Promise<boolean>;
+  insertMany(data: CreateRoleModel[], conn?: EntityManager): Promise<boolean>;
+
+  delete(id: number): Promise<boolean>;
 }

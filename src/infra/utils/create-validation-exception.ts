@@ -1,5 +1,5 @@
-import { IFormatExceptionMessage } from '@domain/adpaters/exception.interface';
 import { CommonErrorCodeEnum } from '@domain/common/enum/error-code.enum';
+import { IFormatExceptionMessage } from '@domain/model/common/exception';
 import { BadRequestException } from '@nestjs/common';
 import { ValidationError } from 'class-validator';
 

@@ -1,7 +1,5 @@
-import {
-  IException,
-  IFormatExceptionMessage,
-} from '@domain/adpaters/exception.interface';
+import { IException } from '@domain/adpaters/exception.interface';
+import { IFormatExceptionMessage } from '@domain/model/common/exception';
 import {
   BadRequestException,
   ForbiddenException,

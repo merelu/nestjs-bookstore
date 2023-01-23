@@ -16,6 +16,7 @@ export class PointModel extends CommonModel implements IPointModel {
 
 export class CreatePointModel extends PickType(PointModel, [
   'userId',
+  'point',
 ] as const) {}
 
 export class UpdatePointModel extends PickType(PointModel, [

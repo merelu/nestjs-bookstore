@@ -30,6 +30,16 @@ export class DatabaseUserRepository implements IUserRepository {
     }
   }
 
+  async findOneByEmail(email: string): Promise<UserModel | null> {
+    const result = await this.userEntityRepository.findOne({
+      where: { email },
+    });
+    if (!result) {
+      return null;
+    }
+    return this.toUser(result);
+  }
+
   async findOneById(
     id: number,
     conn?: EntityManager | undefined,

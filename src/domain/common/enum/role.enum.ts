@@ -1,4 +1,4 @@
-export const enum RoleEnum {
+export enum RoleEnum {
   CUSTOMER = 0,
   SELLER = 1,
 }

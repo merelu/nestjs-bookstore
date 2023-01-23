@@ -1,4 +1,4 @@
-import { PickType } from '@nestjs/mapped-types';
+import { OmitType, PickType } from '@nestjs/mapped-types';
 import { CommonModel } from '../common/common';
 import { PointModel } from './point';
 import { RoleModel } from './role';
@@ -22,6 +22,10 @@ export class UserModel extends CommonModel implements IUserModel {
   roles: RoleModel[];
   point: PointModel;
 }
+
+export class UserModelWithoutPassword extends OmitType(UserModel, [
+  'password',
+] as const) {}
 
 export class CreateUserModel extends PickType(UserModel, [
   'name',

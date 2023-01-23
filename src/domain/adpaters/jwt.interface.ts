@@ -1,9 +1,7 @@
 import { JwtSignOptions } from '@nestjs/jwt';
 
-export interface IJwtServicePayload {
+export interface IJwtPayload {
   sub: number;
-  email?: string;
-  name?: string;
 }
 
 export interface IJwtService {
@@ -11,13 +9,9 @@ export interface IJwtService {
     token: string,
     secret?: string,
     ignoreExp?: boolean,
-  ): Promise<IJwtServicePayload>;
+  ): Promise<IJwtPayload>;
 
-  createToken(
-    payload: IJwtServicePayload,
-    secret: string,
-    expiresIn?: string,
-  ): string;
+  createToken(payload: IJwtPayload, secret: string, expiresIn?: string): string;
 
   createTokenByOption(option: JwtSignOptions): string;
 }

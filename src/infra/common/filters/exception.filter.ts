@@ -1,5 +1,5 @@
-import { IFormatExceptionMessage } from '@domain/adpaters/exception.interface';
 import { CommonErrorCodeEnum } from '@domain/common/enum/error-code.enum';
+import { IFormatExceptionMessage } from '@domain/model/common/exception';
 import { LoggerService } from '@infra/services/logger/logger.service';
 import {
   ArgumentsHost,

@@ -98,6 +98,7 @@ export class DatabasePointRepository implements IPointRepository {
     const result = new Point();
 
     result.userId = data.userId;
+    result.point = data.point;
 
     return result;
   }

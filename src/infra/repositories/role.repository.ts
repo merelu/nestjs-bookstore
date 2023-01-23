@@ -25,8 +25,32 @@ export class DatabaseRoleRepository implements IRoleRepository {
       return this.toRole(result);
     }
   }
-  async softDelete(id: number): Promise<boolean> {
-    const result = await this.roleEntityRepository.softDelete({ id });
+
+  async insertMany(
+    data: CreateRoleModel[],
+    conn?: EntityManager | undefined,
+  ): Promise<boolean> {
+    const roleEntities = data.map((v) => this.toRoleEntity(v));
+
+    if (conn) {
+      const result = await conn.getRepository(Role).insert(roleEntities);
+
+      if (result.identifiers.length !== data.length) {
+        return false;
+      }
+      return true;
+    } else {
+      const result = await this.roleEntityRepository.insert(roleEntities);
+
+      if (result.identifiers.length !== data.length) {
+        return false;
+      }
+      return true;
+    }
+  }
+
+  async delete(id: number): Promise<boolean> {
+    const result = await this.roleEntityRepository.delete({ id });
 
     if (!result.affected) {
       return false;
@@ -41,8 +65,6 @@ export class DatabaseRoleRepository implements IRoleRepository {
     result.role = data.role;
 
     result.createdAt = data.createdAt;
-    result.updatedAt = data.updatedAt;
-    result.deletedAt = data.deletedAt;
 
     return result;
   }
