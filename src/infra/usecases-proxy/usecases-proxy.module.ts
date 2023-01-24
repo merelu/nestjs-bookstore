@@ -210,6 +210,8 @@ export class UseCasesProxyModule {
         UseCasesProxyModule.GET_COVER_IMAGE_USECASES_PROXY,
 
         UseCasesProxyModule.ADD_PRODUCT_USECASES_PROXY,
+
+        UseCasesProxyModule.ADD_ORDER_USECASES_PROXY,
       ],
     };
   }

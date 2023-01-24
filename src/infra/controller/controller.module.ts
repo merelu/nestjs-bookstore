@@ -10,6 +10,7 @@ import { TerminusModule } from '@nestjs/terminus';
 import { AuthController } from './auth/auth.controller';
 import { BookController } from './book/book.controller';
 import { HealthController } from './health/health.controller';
+import { OrderController } from './order/order.controller';
 import { ProductController } from './product/product.controller';
 
 @Module({
@@ -25,6 +26,7 @@ import { ProductController } from './product/product.controller';
     AuthController,
     BookController,
     ProductController,
+    OrderController,
   ],
   providers: [JwtStrategy, JwtRefreshTokenStrategy, LocalStrategy],
 })

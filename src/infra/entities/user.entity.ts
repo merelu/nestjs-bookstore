@@ -29,10 +29,10 @@ export class User extends CommonEntity implements IUserModel {
   @Column({ type: 'enum', enum: RoleEnum, default: RoleEnum.CUSTOMER })
   role: RoleEnum;
 
-  @Column({ type: 'integer', nullable: true })
-  pointId?: number;
+  @Column({ type: 'integer' })
+  pointId: number;
 
-  @OneToOne(() => Point, (point) => point.user, { nullable: true })
+  @OneToOne(() => Point, (point) => point.user)
   @JoinColumn({ name: 'point_id' })
   point?: PointModel;
 

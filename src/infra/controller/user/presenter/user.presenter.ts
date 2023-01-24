@@ -24,6 +24,9 @@ export class BaseUserPresenter implements IUserModelWithoutPassword {
   @ApiProperty()
   role: RoleEnum;
 
+  @ApiProperty()
+  pointId: number;
+
   constructor(data: UserModelWithoutPassword) {
     this.id = data.id;
     this.name = data.name;
@@ -31,5 +34,6 @@ export class BaseUserPresenter implements IUserModelWithoutPassword {
     this.zipCode = data.zipCode;
     this.address = data.address;
     this.role = data.role;
+    this.pointId = data.pointId;
   }
 }

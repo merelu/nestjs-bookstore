@@ -11,7 +11,7 @@ export interface IUserModelWithoutPassword {
   zipCode: string;
   address: string;
   role: RoleEnum;
-  pointId?: number;
+  pointId: number;
 }
 export interface IUserModel extends IUserModelWithoutPassword {
   password: string;
@@ -24,7 +24,7 @@ export class UserModel extends CommonModel implements IUserModel {
   email: string;
   password: string;
   role: RoleEnum;
-  pointId?: number;
+  pointId: number;
   point?: PointModel;
   products?: ProductModel[];
   orders?: OrderModel[];
