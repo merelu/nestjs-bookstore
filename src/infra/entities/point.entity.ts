@@ -1,22 +1,18 @@
 import { IPointModel } from '@domain/model/database/point';
 import { UserModel } from '@domain/model/database/user';
-import { Column, Entity, JoinColumn, OneToMany, OneToOne } from 'typeorm';
+import { Column, Entity, OneToMany, OneToOne } from 'typeorm';
 import { CommonEntity } from './common.entity';
 import { PointLog } from './point-log.entity';
 import { User } from './user.entity';
 
 @Entity()
 export class Point extends CommonEntity implements IPointModel {
-  @Column({ type: 'integer', nullable: false })
-  userId: number;
-
-  @OneToOne(() => User, (user) => user.point)
-  @JoinColumn({ name: 'user_id' })
-  user: UserModel;
+  @OneToOne(() => User, (user) => user.point, { nullable: true })
+  user?: UserModel;
 
   @Column({ type: 'integer', default: 0 })
   point: number;
 
-  @OneToMany(() => PointLog, (pointLog) => pointLog.point)
-  pointLogs: PointLog[];
+  @OneToMany(() => PointLog, (pointLog) => pointLog.point, { nullable: true })
+  pointLogs?: PointLog[];
 }

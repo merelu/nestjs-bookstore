@@ -1,5 +1,6 @@
 import { PickType } from '@nestjs/swagger';
 import { CommonModel } from '../common/common';
+import { AuthorBookModel } from './author-book';
 
 export interface IAuthorModel {
   id: number;
@@ -8,6 +9,7 @@ export interface IAuthorModel {
 
 export class AuthorModel extends CommonModel implements IAuthorModel {
   name: string;
+  authorBooks?: AuthorBookModel[];
 }
 
 export class CreateAuthorModel extends PickType(AuthorModel, [

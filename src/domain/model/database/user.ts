@@ -1,14 +1,17 @@
+import { RoleEnum } from '@domain/common/enum/role.enum';
 import { OmitType, PickType } from '@nestjs/mapped-types';
 import { CommonModel } from '../common/common';
 import { PointModel } from './point';
-import { RoleModel } from './role';
-
-export interface IUserModel {
+export interface IUserModelWithoutPassword {
   id: number;
   name: string;
   email: string;
   zipCode: string;
   address: string;
+  role: RoleEnum;
+  pointId?: number;
+}
+export interface IUserModel extends IUserModelWithoutPassword {
   password: string;
 }
 
@@ -18,9 +21,9 @@ export class UserModel extends CommonModel implements IUserModel {
   name: string;
   email: string;
   password: string;
-
-  roles: RoleModel[];
-  point: PointModel;
+  role: RoleEnum;
+  pointId?: number;
+  point?: PointModel;
 }
 
 export class UserModelWithoutPassword extends OmitType(UserModel, [
@@ -33,6 +36,8 @@ export class CreateUserModel extends PickType(UserModel, [
   'zipCode',
   'address',
   'password',
+  'role',
+  'pointId',
 ] as const) {}
 
 export class UpdateUserModel extends PickType(CreateUserModel, [

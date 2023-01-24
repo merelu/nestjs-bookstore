@@ -1,4 +1,3 @@
-import { PointModel } from '@domain/model/database/point';
 import {
   CreatePointLogModel,
   PointLogModel,

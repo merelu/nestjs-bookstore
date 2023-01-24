@@ -8,7 +8,9 @@ import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { TerminusModule } from '@nestjs/terminus';
 import { AuthController } from './auth/auth.controller';
+import { BookController } from './book/book.controller';
 import { HealthController } from './health/health.controller';
+import { ProductController } from './product/product.controller';
 
 @Module({
   imports: [
@@ -18,7 +20,12 @@ import { HealthController } from './health/health.controller';
     ExceptionModule,
     EnvironmentConfigModule,
   ],
-  controllers: [HealthController, AuthController],
+  controllers: [
+    HealthController,
+    AuthController,
+    BookController,
+    ProductController,
+  ],
   providers: [JwtStrategy, JwtRefreshTokenStrategy, LocalStrategy],
 })
 export class ControllersModule {}

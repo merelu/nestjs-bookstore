@@ -4,11 +4,9 @@ import { CommonErrorCodeEnum } from '@domain/common/enum/error-code.enum';
 import { PointLogActionEnum } from '@domain/common/enum/point-log-action.enum';
 import { CreatePointModel } from '@domain/model/database/point';
 import { CreatePointLogModel } from '@domain/model/database/point-log';
-import { CreateRoleModel } from '@domain/model/database/role';
 import { CreateUserModel } from '@domain/model/database/user';
 import { IPointLogRepository } from '@domain/repositories/point-log.repository.interface';
 import { IPointRepository } from '@domain/repositories/point.repository.interface';
-import { IRoleRepository } from '@domain/repositories/role.repository.interface';
 import { IUserRepository } from '@domain/repositories/user.repository.interface';
 import { SignupDto } from '@infra/controller/auth/dto/signup.dto';
 import { EntityManager } from 'typeorm';
@@ -18,7 +16,6 @@ export class SignupUseCases {
     private readonly userRepository: IUserRepository,
     private readonly pointRepository: IPointRepository,
     private readonly pointLogRepository: IPointLogRepository,
-    private readonly roleRepository: IRoleRepository,
     private readonly bcryptService: IBcryptService,
     private readonly exceptionService: IException,
   ) {}
@@ -32,20 +29,13 @@ export class SignupUseCases {
     newUser.password = await this.bcryptService.hash(data.password);
     newUser.zipCode = data.zipCode;
     newUser.address = data.address;
+    newUser.role = data.role;
 
-    const user = await this.createUser(newUser, conn);
+    const point = await this.giveSignUpBenefit(conn);
 
-    const newRoles = data.roles.map((role) => {
-      const newRole = new CreateRoleModel();
-      newRole.role = role;
-      newRole.userId = user.id;
+    newUser.pointId = point.id;
 
-      return newRole;
-    });
-
-    await this.createRoles(newRoles, conn);
-
-    await this.giveSignUpBenefit(user.id, conn);
+    await this.createUser(newUser, conn);
   }
 
   private async createUser(data: CreateUserModel, conn: EntityManager) {
@@ -56,17 +46,6 @@ export class SignupUseCases {
       throw this.exceptionService.internalServerErrorException({
         error_code: CommonErrorCodeEnum.INTERNAL_SERVER,
         error_text: '유저 생성 실패',
-      });
-    }
-  }
-
-  private async createRoles(roles: CreateRoleModel[], conn: EntityManager) {
-    const result = await this.roleRepository.insertMany(roles, conn);
-
-    if (!result) {
-      throw this.exceptionService.internalServerErrorException({
-        error_code: CommonErrorCodeEnum.INTERNAL_SERVER,
-        error_text: '역할 저장 실패',
       });
     }
   }
@@ -82,12 +61,12 @@ export class SignupUseCases {
     }
   }
 
-  private async giveSignUpBenefit(userId: number, conn: EntityManager) {
+  private async giveSignUpBenefit(conn: EntityManager) {
     try {
-      const point = await this.createPoint(userId, conn);
+      const point = await this.createPoint(conn);
       await this.createPointLog(point.id, conn);
+      return point;
     } catch (err) {
-      console.log(err);
       throw this.exceptionService.internalServerErrorException({
         error_code: CommonErrorCodeEnum.INTERNAL_SERVER,
         error_text: '포인트 지급 실패',
@@ -95,9 +74,8 @@ export class SignupUseCases {
     }
   }
 
-  private async createPoint(userId: number, conn: EntityManager) {
+  private async createPoint(conn: EntityManager) {
     const newPoint = new CreatePointModel();
-    newPoint.userId = userId;
     newPoint.point = 100;
     const result = await this.pointRepository.create(newPoint, conn);
 

@@ -13,13 +13,21 @@ import { DynamicModule } from '@nestjs/common';
 import { Module } from '@nestjs/common';
 import { UseCaseProxy } from './usecases-proxy';
 import { SignupUseCases } from '@usecases/auth/signup.usecases';
-import { DatabaseRoleRepository } from '@infra/repositories/role.repository';
 import { RedisCacheModule } from '@infra/services/redis-cache/redis-cache.module';
 import { LoginUseCases } from '@usecases/auth/login.usecases';
 import { JwtTokenService } from '@infra/services/jwt/jwt-token.service';
 import { RedisCacheService } from '@infra/services/redis-cache/redis-cache.service';
 import { EnvironmentConfigService } from '@infra/config/environment-config/environment-config.service';
 import { IRedisCacheService } from '@domain/adpaters/redis-cache.interface';
+import { DatabaseCoverImageRepository } from '@infra/repositories/cover-image.repository';
+import { AddCoverImageUseCases } from '@usecases/book/add-cover-image.usecases';
+import { GetCoverImageUseCases } from '@usecases/book/get-cover-image.usecases';
+import { DatabaseBookRepository } from '@infra/repositories/book.repository';
+import { DatabaseAuthorRepository } from '@infra/repositories/author.repository';
+import { DatabaseAuthorBookRepository } from '@infra/repositories/author-book.repository';
+import { DatabaseProductRepository } from '@infra/repositories/product.repository';
+import { DatabaseInventoryRepository } from '@infra/repositories/inventory.repository';
+import { AddProductUseCases } from '@usecases/product/add-product.usecases';
 @Module({
   imports: [
     JwtServiceModule,
@@ -35,6 +43,11 @@ export class UseCasesProxyModule {
   static SIGNUP_USECASES_PROXY = 'SignupUseCasesProxy';
   static LOGIN_USECASES_PROXY = 'LoginUseCasesProxy';
 
+  static ADD_COVER_IMAGE_USECASES_PROXY = 'AddCoverImageUseCasesProxy';
+  static GET_COVER_IMAGE_USECASES_PROXY = 'GetCoverImageUseCasesProxy';
+
+  static ADD_PRODUCT_USECASES_PROXY = 'AddProductUseCasesProxy';
+
   static register(): DynamicModule {
     return {
       module: UseCasesProxyModule,
@@ -44,7 +57,6 @@ export class UseCasesProxyModule {
             DatabaseUserRepository,
             DatabasePointRepository,
             DatabasePointLogRepository,
-            DatabaseRoleRepository,
             BcryptService,
             ExceptionService,
           ],
@@ -53,7 +65,6 @@ export class UseCasesProxyModule {
             userRepo: DatabaseUserRepository,
             pointRepo: DatabasePointRepository,
             pointLogRepo: DatabasePointLogRepository,
-            roleRepo: DatabaseRoleRepository,
             bcryptService: BcryptService,
             exceptionService: ExceptionService,
           ) =>
@@ -62,7 +73,6 @@ export class UseCasesProxyModule {
                 userRepo,
                 pointRepo,
                 pointLogRepo,
-                roleRepo,
                 bcryptService,
                 exceptionService,
               ),
@@ -94,10 +104,78 @@ export class UseCasesProxyModule {
               ),
             ),
         },
+        {
+          inject: [
+            DatabaseCoverImageRepository,
+            ExceptionService,
+            EnvironmentConfigService,
+          ],
+          provide: UseCasesProxyModule.ADD_COVER_IMAGE_USECASES_PROXY,
+          useFactory: (
+            coverImageRepo: DatabaseCoverImageRepository,
+            exceptionService: ExceptionService,
+            configService: EnvironmentConfigService,
+          ) =>
+            new UseCaseProxy(
+              new AddCoverImageUseCases(
+                coverImageRepo,
+                exceptionService,
+                configService,
+              ),
+            ),
+        },
+        {
+          inject: [DatabaseCoverImageRepository, ExceptionService],
+          provide: UseCasesProxyModule.GET_COVER_IMAGE_USECASES_PROXY,
+          useFactory: (
+            coverImageRepo: DatabaseCoverImageRepository,
+            exceptionService: ExceptionService,
+          ) =>
+            new UseCaseProxy(
+              new GetCoverImageUseCases(coverImageRepo, exceptionService),
+            ),
+        },
+        {
+          inject: [
+            DatabaseBookRepository,
+            DatabaseAuthorRepository,
+            DatabaseAuthorBookRepository,
+            DatabaseProductRepository,
+            DatabaseInventoryRepository,
+            DatabaseCoverImageRepository,
+            ExceptionService,
+          ],
+          provide: UseCasesProxyModule.ADD_PRODUCT_USECASES_PROXY,
+          useFactory: (
+            bookRepo: DatabaseBookRepository,
+            authorRepo: DatabaseAuthorRepository,
+            authorBookRepo: DatabaseAuthorBookRepository,
+            productRepo: DatabaseProductRepository,
+            inventoryRepo: DatabaseInventoryRepository,
+            coverImageRepo: DatabaseCoverImageRepository,
+            exceptionService: ExceptionService,
+          ) =>
+            new UseCaseProxy(
+              new AddProductUseCases(
+                bookRepo,
+                authorRepo,
+                authorBookRepo,
+                productRepo,
+                inventoryRepo,
+                coverImageRepo,
+                exceptionService,
+              ),
+            ),
+        },
       ],
       exports: [
         UseCasesProxyModule.SIGNUP_USECASES_PROXY,
         UseCasesProxyModule.LOGIN_USECASES_PROXY,
+
+        UseCasesProxyModule.ADD_COVER_IMAGE_USECASES_PROXY,
+        UseCasesProxyModule.GET_COVER_IMAGE_USECASES_PROXY,
+
+        UseCasesProxyModule.ADD_PRODUCT_USECASES_PROXY,
       ],
     };
   }

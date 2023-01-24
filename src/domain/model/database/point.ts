@@ -4,18 +4,15 @@ import { UserModel } from './user';
 
 export interface IPointModel {
   id: number;
-  userId: number;
   point: number;
 }
 
 export class PointModel extends CommonModel implements IPointModel {
-  userId: number;
-  user: UserModel;
+  user?: UserModel;
   point: number;
 }
 
 export class CreatePointModel extends PickType(PointModel, [
-  'userId',
   'point',
 ] as const) {}
 

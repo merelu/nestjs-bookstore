@@ -90,6 +90,9 @@ export class DatabaseUserRepository implements IUserRepository {
     result.address = data.address;
     result.email = data.email;
     result.password = data.password;
+    result.role = data.role;
+    result.pointId = data.pointId;
+    result.point = data.point;
 
     result.createdAt = data.createdAt;
     result.updatedAt = data.updatedAt;
@@ -106,6 +109,8 @@ export class DatabaseUserRepository implements IUserRepository {
     result.zipCode = data.zipCode;
     result.address = data.address;
     result.password = data.password;
+    result.role = data.role;
+    result.pointId = data.pointId;
 
     return result;
   }

@@ -1,14 +1,20 @@
 import { IDatabaseConfig } from '@domain/config/database-config.interface';
 import { IJwtConfig } from '@domain/config/jwt-config.interface';
 import { IRedisConfig } from '@domain/config/redis-config.interface';
+import { IUrlConfig } from '@domain/config/url-config.interface';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class EnvironmentConfigService
-  implements IDatabaseConfig, IJwtConfig, IRedisConfig
+  implements IDatabaseConfig, IJwtConfig, IRedisConfig, IUrlConfig
 {
   constructor(private configService: ConfigService) {}
+
+  getBaseUrl(): string {
+    return this.configService.get<string>('BASE_URL') as string;
+  }
+
   getRedisHost(): string {
     return this.configService.get<string>('REDIS_HOST') as string;
   }

@@ -27,20 +27,20 @@ export class DatabasePointRepository implements IPointRepository {
   }
 
   async addPoint(
-    userId: number,
+    id: number,
     point: number,
     conn?: EntityManager | undefined,
   ): Promise<void> {
     if (conn) {
       await conn.getRepository(Point).update(
-        { userId },
+        { id },
         {
           point: () => `"point" + ${point}`,
         },
       );
     } else {
       await this.pointEntityRepository.update(
-        { userId },
+        { id },
         {
           point: () => `"point" + ${point}`,
         },
@@ -49,20 +49,20 @@ export class DatabasePointRepository implements IPointRepository {
   }
 
   async substractPoint(
-    userId: number,
+    id: number,
     point: number,
     conn?: EntityManager | undefined,
   ): Promise<void> {
     if (conn) {
       await conn.getRepository(Point).update(
-        { userId },
+        { id },
         {
           point: () => `"point" - ${point}`,
         },
       );
     } else {
       await this.pointEntityRepository.update(
-        { userId },
+        { id },
         {
           point: () => `"point" - ${point}`,
         },
@@ -84,7 +84,7 @@ export class DatabasePointRepository implements IPointRepository {
 
     result.id = data.id;
     result.point = data.point;
-    result.userId = data.userId;
+
     result.user = data.user;
 
     result.createdAt = data.createdAt;
@@ -97,7 +97,6 @@ export class DatabasePointRepository implements IPointRepository {
   private toPointEntity(data: CreatePointModel): Point {
     const result = new Point();
 
-    result.userId = data.userId;
     result.point = data.point;
 
     return result;

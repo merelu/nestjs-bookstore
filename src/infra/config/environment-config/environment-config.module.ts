@@ -25,6 +25,8 @@ import { EnvironmentConfigService } from './environment-config.service';
         JWT_REFRESH_TOKEN_EXPIRATION_TIME: Joi.number()
           .required()
           .default(172800),
+
+        BASE_URL: Joi.string().required(),
       }),
     }),
   ],

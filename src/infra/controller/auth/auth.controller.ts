@@ -1,11 +1,15 @@
+import { RoleEnum } from '@domain/common/enum/role.enum';
 import { BaseResponseFormat } from '@domain/model/common/response';
 import { UserModelWithoutPassword } from '@domain/model/database/user';
+import { AuthJwt } from '@infra/common/decorators/auth-jwt.decorator';
 import { AuthLogin } from '@infra/common/decorators/auth-local.decorator';
 import { ApiResponseType } from '@infra/common/decorators/response.decorator';
+import { Roles } from '@infra/common/decorators/roles.decorator';
 import { User } from '@infra/common/decorators/user.decorator';
+import { RolesGuard } from '@infra/common/guards/roles.guard';
 import { UseCaseProxy } from '@infra/usecases-proxy/usecases-proxy';
 import { UseCasesProxyModule } from '@infra/usecases-proxy/usecases-proxy.module';
-import { Body, Controller, Inject, Post, Res } from '@nestjs/common';
+import { Body, Controller, Get, Inject, Post, Res } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiBody,
@@ -19,6 +23,7 @@ import { SignupUseCases } from '@usecases/auth/signup.usecases';
 import { Response } from 'express';
 import { DataSource } from 'typeorm';
 import { FormatException } from '../exception.format';
+import { BaseUserPresenter } from '../user/presenter/user.presenter';
 import { LoginDto } from './dto/login.dto';
 import { SignupDto } from './dto/signup.dto';
 
@@ -28,7 +33,7 @@ import { SignupDto } from './dto/signup.dto';
   description: 'Internal server error',
   type: FormatException,
 })
-@ApiExtraModels(FormatException)
+@ApiExtraModels(FormatException, BaseUserPresenter)
 export class AuthController {
   constructor(
     private readonly dataSource: DataSource,
@@ -66,19 +71,27 @@ export class AuthController {
   @Post('login')
   @AuthLogin()
   @ApiBody({ type: LoginDto })
-  @ApiOperation({ description: '로그인(이메일, 비밀번호' })
+  @ApiOperation({ description: '로그인(이메일, 비밀번호)' })
+  @ApiResponseType(BaseUserPresenter)
   async login(
     @User() user: UserModelWithoutPassword,
     @Res({ passthrough: true }) res: Response,
-  ) {
+  ): Promise<BaseResponseFormat> {
     const useCase = this.loginUseCasesProxy.getInstance();
 
-    const retAccess = await useCase.getJwtTokenAndCookie(user.id);
+    const retAccess = useCase.getJwtTokenAndCookie(user.id);
 
     const retRefresh = await useCase.getJwtRefreshTokenAndCookie(user.id);
 
     res.setHeader('Set-Cookie', [retAccess.cookie, retRefresh.cookie]);
 
-    return 'Success';
+    return new BaseUserPresenter(user);
+  }
+
+  @Get('rolecheck')
+  @AuthJwt(RolesGuard)
+  @Roles(RoleEnum.SELLER)
+  async roleCheck() {
+    return 'success';
   }
 }

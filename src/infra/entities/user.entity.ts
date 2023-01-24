@@ -1,10 +1,11 @@
+import { RoleEnum } from '@domain/common/enum/role.enum';
 import { PointModel } from '@domain/model/database/point';
-import { RoleModel } from '@domain/model/database/role';
+import { ProductModel } from '@domain/model/database/product';
 import { IUserModel } from '@domain/model/database/user';
-import { Column, Entity, OneToMany, OneToOne } from 'typeorm';
+import { Column, Entity, JoinColumn, OneToMany, OneToOne } from 'typeorm';
 import { CommonEntity } from './common.entity';
 import { Point } from './point.entity';
-import { Role } from './role.entity';
+import { Product } from './product.entity';
 
 @Entity()
 export class User extends CommonEntity implements IUserModel {
@@ -23,9 +24,16 @@ export class User extends CommonEntity implements IUserModel {
   @Column({ type: 'varchar' })
   address: string;
 
-  @OneToMany(() => Role, (role) => role.userId)
-  roles: RoleModel[];
+  @Column({ type: 'enum', enum: RoleEnum, default: RoleEnum.CUSTOMER })
+  role: RoleEnum;
 
-  @OneToOne(() => Point, (point) => point.user)
-  point: PointModel;
+  @Column({ type: 'integer', nullable: true })
+  pointId?: number;
+
+  @OneToOne(() => Point, (point) => point.user, { nullable: true })
+  @JoinColumn({ name: 'point_id' })
+  point?: PointModel;
+
+  @OneToMany(() => Product, (product) => product.seller)
+  products: ProductModel[];
 }

@@ -42,9 +42,7 @@ export class SignupDto {
   @IsNotEmpty()
   readonly address: string;
 
-  @ApiProperty({ isArray: true, type: 'number' })
-  @IsEnum(RoleEnum, { each: true })
-  @ArrayUnique()
-  @ArrayNotEmpty()
-  readonly roles: RoleEnum[];
+  @ApiProperty({ type: 'number' })
+  @IsEnum(RoleEnum)
+  readonly role: RoleEnum;
 }
