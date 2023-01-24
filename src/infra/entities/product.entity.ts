@@ -1,11 +1,20 @@
 import { BookModel } from '@domain/model/database/book';
 import { InventoryModel } from '@domain/model/database/inventory';
+import { OrderProductModel } from '@domain/model/database/order-product';
 import { IProductModel } from '@domain/model/database/product';
 import { UserModel } from '@domain/model/database/user';
-import { Column, Entity, JoinColumn, ManyToOne, OneToOne } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  OneToOne,
+} from 'typeorm';
 import { Book } from './book.entity';
 import { CommonEntity } from './common.entity';
 import { Inventory } from './inventory.entity';
+import { OrderProduct } from './order-product.entity';
 import { User } from './user.entity';
 
 @Entity()
@@ -35,4 +44,7 @@ export class Product extends CommonEntity implements IProductModel {
   })
   @JoinColumn({ name: 'inventory_id' })
   inventory?: InventoryModel;
+
+  @OneToMany(() => OrderProduct, (orderProduct) => orderProduct.product)
+  orderProducts?: OrderProductModel[];
 }

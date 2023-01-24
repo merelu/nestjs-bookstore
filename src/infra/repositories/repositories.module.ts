@@ -4,6 +4,8 @@ import { Author } from '@infra/entities/author.entity';
 import { Book } from '@infra/entities/book.entity';
 import { CoverImage } from '@infra/entities/cover-image.entity';
 import { Inventory } from '@infra/entities/inventory.entity';
+import { OrderProduct } from '@infra/entities/order-product.entity';
+import { Order } from '@infra/entities/order.entity';
 import { PointLog } from '@infra/entities/point-log.entity';
 import { Point } from '@infra/entities/point.entity';
 import { Product } from '@infra/entities/product.entity';
@@ -33,6 +35,8 @@ import { DatabaseUserRepository } from './user.repository';
       CoverImage,
       Product,
       Inventory,
+      Order,
+      OrderProduct,
     ]),
   ],
   providers: [

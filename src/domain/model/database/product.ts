@@ -2,6 +2,7 @@ import { PickType } from '@nestjs/mapped-types';
 import { CommonModel } from '../common/common';
 import { BookModel } from './book';
 import { InventoryModel } from './inventory';
+import { OrderProductModel } from './order-product';
 import { UserModel } from './user';
 
 export interface IProductModel {
@@ -20,6 +21,7 @@ export class ProductModel extends CommonModel implements IProductModel {
   sellerId?: number;
   seller?: UserModel;
   price: number;
+  orderProducts?: OrderProductModel[];
 }
 
 export class CreateProductModel extends PickType(ProductModel, [

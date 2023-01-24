@@ -1,4 +1,4 @@
-export const enum OrderStatusEnum {
+export enum OrderStatusEnum {
   READY = 0,
   CANCEL = 1,
 }

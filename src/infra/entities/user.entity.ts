@@ -1,9 +1,11 @@
 import { RoleEnum } from '@domain/common/enum/role.enum';
+import { OrderModel } from '@domain/model/database/order';
 import { PointModel } from '@domain/model/database/point';
 import { ProductModel } from '@domain/model/database/product';
 import { IUserModel } from '@domain/model/database/user';
 import { Column, Entity, JoinColumn, OneToMany, OneToOne } from 'typeorm';
 import { CommonEntity } from './common.entity';
+import { Order } from './order.entity';
 import { Point } from './point.entity';
 import { Product } from './product.entity';
 
@@ -36,4 +38,7 @@ export class User extends CommonEntity implements IUserModel {
 
   @OneToMany(() => Product, (product) => product.seller)
   products: ProductModel[];
+
+  @OneToMany(() => Order, (order) => order.buyer, { nullable: true })
+  orders?: OrderModel[];
 }
