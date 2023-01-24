@@ -26,6 +26,20 @@ export class DatabasePointRepository implements IPointRepository {
     }
   }
 
+  async findOneById(id: number) {
+    const result = await this.pointEntityRepository.findOne({
+      where: {
+        id,
+      },
+    });
+
+    if (!result) {
+      return null;
+    }
+
+    return this.toPoint(result);
+  }
+
   async addPoint(
     id: number,
     point: number,

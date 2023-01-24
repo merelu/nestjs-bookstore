@@ -28,6 +28,9 @@ import { DatabaseAuthorBookRepository } from '@infra/repositories/author-book.re
 import { DatabaseProductRepository } from '@infra/repositories/product.repository';
 import { DatabaseInventoryRepository } from '@infra/repositories/inventory.repository';
 import { AddProductUseCases } from '@usecases/product/add-product.usecases';
+import { AddOrderUseCases } from '@usecases/order/add-order.usecases';
+import { DatabaseOrderRepository } from '@infra/repositories/order.repository';
+import { DatabaseOrderProductRepository } from '@infra/repositories/order-product.repository';
 @Module({
   imports: [
     JwtServiceModule,
@@ -47,6 +50,8 @@ export class UseCasesProxyModule {
   static GET_COVER_IMAGE_USECASES_PROXY = 'GetCoverImageUseCasesProxy';
 
   static ADD_PRODUCT_USECASES_PROXY = 'AddProductUseCasesProxy';
+
+  static ADD_ORDER_USECASES_PROXY = 'AddOrderUseCasesProxy';
 
   static register(): DynamicModule {
     return {
@@ -163,6 +168,35 @@ export class UseCasesProxyModule {
                 productRepo,
                 inventoryRepo,
                 coverImageRepo,
+                exceptionService,
+              ),
+            ),
+        },
+        {
+          inject: [
+            DatabaseProductRepository,
+            DatabasePointRepository,
+            DatabasePointLogRepository,
+            DatabaseOrderRepository,
+            DatabaseOrderProductRepository,
+            ExceptionService,
+          ],
+          provide: UseCasesProxyModule.ADD_ORDER_USECASES_PROXY,
+          useFactory: (
+            productRepo: DatabaseProductRepository,
+            pointRepo: DatabasePointRepository,
+            pointLogRepo: DatabasePointLogRepository,
+            orderRepo: DatabaseOrderRepository,
+            orderProductRepo: DatabaseOrderProductRepository,
+            exceptionService: ExceptionService,
+          ) =>
+            new UseCaseProxy(
+              new AddOrderUseCases(
+                productRepo,
+                pointRepo,
+                pointLogRepo,
+                orderRepo,
+                orderProductRepo,
                 exceptionService,
               ),
             ),

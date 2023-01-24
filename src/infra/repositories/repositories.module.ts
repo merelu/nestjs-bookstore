@@ -17,6 +17,8 @@ import { DatabaseAuthorRepository } from './author.repository';
 import { DatabaseBookRepository } from './book.repository';
 import { DatabaseCoverImageRepository } from './cover-image.repository';
 import { DatabaseInventoryRepository } from './inventory.repository';
+import { DatabaseOrderProductRepository } from './order-product.repository';
+import { DatabaseOrderRepository } from './order.repository';
 import { DatabasePointLogRepository } from './point-log.repository';
 import { DatabasePointRepository } from './point.repository';
 import { DatabaseProductRepository } from './product.repository';
@@ -49,6 +51,8 @@ import { DatabaseUserRepository } from './user.repository';
     DatabaseAuthorRepository,
     DatabaseProductRepository,
     DatabaseInventoryRepository,
+    DatabaseOrderRepository,
+    DatabaseOrderProductRepository,
   ],
   exports: [
     DatabaseUserRepository,
@@ -60,6 +64,8 @@ import { DatabaseUserRepository } from './user.repository';
     DatabaseAuthorRepository,
     DatabaseProductRepository,
     DatabaseInventoryRepository,
+    DatabaseOrderRepository,
+    DatabaseOrderProductRepository,
   ],
 })
 export class RepositoriesModule {}

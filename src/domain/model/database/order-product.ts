@@ -15,10 +15,10 @@ export class OrderProductModel
   extends CommonModel
   implements IOrderProductModel
 {
-  orderId: number;
-  order: OrderModel;
-  productId: number;
-  product: ProductModel;
+  orderId?: number;
+  order?: OrderModel;
+  productId?: number;
+  product?: ProductModel;
   orderCount: number;
   price: number;
 }

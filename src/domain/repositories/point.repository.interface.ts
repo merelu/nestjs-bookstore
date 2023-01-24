@@ -4,10 +4,12 @@ import { EntityManager } from 'typeorm';
 export interface IPointRepository {
   create(data: CreatePointModel, conn?: EntityManager): Promise<PointModel>;
 
-  addPoint(userId: number, point: number, conn?: EntityManager): Promise<void>;
+  addPoint(id: number, point: number, conn?: EntityManager): Promise<void>;
+
+  findOneById(id: number): Promise<PointModel | null>;
 
   substractPoint(
-    userId: number,
+    id: number,
     point: number,
     conn?: EntityManager,
   ): Promise<void>;

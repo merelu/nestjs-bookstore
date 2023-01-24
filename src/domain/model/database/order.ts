@@ -6,23 +6,23 @@ import { UserModel } from './user';
 
 export interface IOrderModel {
   id: number;
-  buyer_id?: number;
+  buyerId?: number;
   orderState: OrderStatusEnum;
   usePoint: number;
   orderDate: Date;
 }
 
 export class OrderModel extends CommonModel implements IOrderModel {
-  buyer_id?: number;
+  buyerId?: number;
   buyer?: UserModel;
   orderState: OrderStatusEnum;
   usePoint: number;
   orderDate: Date;
-  orderProducts: OrderProductModel[];
+  orderProducts?: OrderProductModel[];
 }
 
 export class CreateOrderModel extends PickType(OrderModel, [
-  'buyer_id',
+  'buyerId',
   'usePoint',
   'orderDate',
 ] as const) {}

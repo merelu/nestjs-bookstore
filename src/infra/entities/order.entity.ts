@@ -23,7 +23,7 @@ export class Order extends CommonEntity implements IOrderModel {
   orderDate: Date;
 
   @Column({ type: 'integer', nullable: true })
-  buyer_id?: number;
+  buyerId?: number;
 
   @ManyToOne(() => User, (user) => user.orders, { nullable: true })
   @JoinColumn({ name: 'buyer_id' })
