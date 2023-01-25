@@ -35,6 +35,7 @@ import { GetOrdersUseCases } from '@usecases/order/get-orders.usecases';
 import { CancelOrderUseCases } from '@usecases/order/cancel-order.usecases';
 import { CheckInventoryUseCases } from '@usecases/product/check-inventory.usecases';
 import { UpdateCoverImageUseCases } from '@usecases/book/update-cover-image.usecases';
+import { LogoutUseCases } from '@usecases/auth/logout.usecases';
 @Module({
   imports: [
     JwtServiceModule,
@@ -49,6 +50,7 @@ import { UpdateCoverImageUseCases } from '@usecases/book/update-cover-image.usec
 export class UseCasesProxyModule {
   static SIGNUP_USECASES_PROXY = 'SignupUseCasesProxy';
   static LOGIN_USECASES_PROXY = 'LoginUseCasesProxy';
+  static LOGOUT_USECASES_PROXY = 'LogoutUseCasesProxy';
 
   static ADD_COVER_IMAGE_USECASES_PROXY = 'AddCoverImageUseCasesProxy';
   static GET_COVER_IMAGE_USECASES_PROXY = 'GetCoverImageUseCasesProxy';
@@ -116,6 +118,17 @@ export class UseCasesProxyModule {
                 jwtService,
                 redisCacheService,
               ),
+            ),
+        },
+        {
+          inject: [RedisCacheService, ExceptionService],
+          provide: UseCasesProxyModule.LOGOUT_USECASES_PROXY,
+          useFactory: (
+            redisCacheService: RedisCacheService,
+            exceptionService: ExceptionService,
+          ) =>
+            new UseCaseProxy(
+              new LogoutUseCases(redisCacheService, exceptionService),
             ),
         },
         {
@@ -270,6 +283,7 @@ export class UseCasesProxyModule {
       exports: [
         UseCasesProxyModule.SIGNUP_USECASES_PROXY,
         UseCasesProxyModule.LOGIN_USECASES_PROXY,
+        UseCasesProxyModule.LOGOUT_USECASES_PROXY,
 
         UseCasesProxyModule.ADD_COVER_IMAGE_USECASES_PROXY,
         UseCasesProxyModule.GET_COVER_IMAGE_USECASES_PROXY,

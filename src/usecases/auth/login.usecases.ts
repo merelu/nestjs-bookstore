@@ -23,7 +23,7 @@ export class LoginUseCases {
 
     return {
       token,
-      cookie: `Authentication=${token}; HttpOnly; Path=/; Max-Age=${this.jwtConfig.getJwtExpirationTime()}`,
+      cookie: `Authentication=Bearer ${token}; HttpOnly; Path=/; Max-Age=${this.jwtConfig.getJwtExpirationTime()}`,
     };
   }
 
@@ -40,7 +40,7 @@ export class LoginUseCases {
 
     return {
       token,
-      cookie: `Refresh=${token}; HttpOnly; Path=/; Max-Age=${this.jwtConfig.getJwtRefreshExpirationTime()}`,
+      cookie: `Refresh=Bearer ${token}; HttpOnly; Path=/; Max-Age=${this.jwtConfig.getJwtRefreshExpirationTime()}`,
     };
   }
 

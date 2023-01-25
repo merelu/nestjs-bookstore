@@ -21,9 +21,17 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
         (request: Request) => {
-          return request.cookies.Authentication;
+          let token = request?.cookies?.Authentication || '';
+          if (token.startsWith('Bearer ')) {
+            token = token.substring(7, token.length);
+          } else {
+            throw this.exceptionService.unauthorizedException({
+              error_code: CommonErrorCodeEnum.UNAUTHORIZED,
+              error_text: '토큰이 없거나 형식이 올바르지 않습니다.',
+            });
+          }
+          return token;
         },
-        ExtractJwt.fromAuthHeaderAsBearerToken(),
       ]),
       secretOrKey: configService.getJwtSecret(),
       ignoreExpiration: false,

@@ -24,15 +24,14 @@ export class JwtRefreshTokenStrategy extends PassportStrategy(
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
         (request: Request) => {
-          return request?.cookies?.Refresh;
-        },
-        (request: Request) => {
-          const token = request.body['refresh_token'];
+          let token = request?.cookies?.Refresh || '';
 
-          if (!token) {
-            throw this.exceptionService.badRequestException({
-              error_code: CommonErrorCodeEnum.INVALID_PARAM,
-              error_text: 'Empty refresh_token',
+          if (token.startsWith('Bearer ')) {
+            token = token.substring(7, token.length);
+          } else {
+            throw this.exceptionService.unauthorizedException({
+              error_code: CommonErrorCodeEnum.UNAUTHORIZED,
+              error_text: '토큰이 없거나 형식이 올바르지 않습니다.',
             });
           }
           return token;
@@ -45,9 +44,9 @@ export class JwtRefreshTokenStrategy extends PassportStrategy(
   }
 
   async validate(request: Request, payload: IJwtPayload) {
-    const token = (request?.cookies?.Refresh ||
-      request.body.refresh_token) as string;
-    const signiture = token.split('.')[2];
+    const token = request?.cookies?.Refresh;
+
+    const signiture = token.substring(7, token.length).split('.')[2];
 
     const isValid = await this.loginUsecaseProxy
       .getInstance()

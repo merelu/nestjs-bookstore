@@ -1,15 +1,13 @@
-import { RoleEnum } from '@domain/common/enum/role.enum';
 import { BaseResponseFormat } from '@domain/model/common/response';
 import { UserModelWithoutPassword } from '@domain/model/database/user';
 import { AuthJwt } from '@infra/common/decorators/auth-jwt.decorator';
 import { AuthLogin } from '@infra/common/decorators/auth-local.decorator';
+import { AuthRefreshJwt } from '@infra/common/decorators/auth-refresh-jwt.decorator';
 import { ApiResponseType } from '@infra/common/decorators/response.decorator';
-import { Roles } from '@infra/common/decorators/roles.decorator';
 import { User } from '@infra/common/decorators/user.decorator';
-import { RolesGuard } from '@infra/common/guards/roles.guard';
 import { UseCaseProxy } from '@infra/usecases-proxy/usecases-proxy';
 import { UseCasesProxyModule } from '@infra/usecases-proxy/usecases-proxy.module';
-import { Body, Controller, Get, Inject, Post, Res } from '@nestjs/common';
+import { Body, Controller, Inject, Post, Res } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiBody,
@@ -19,6 +17,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { LoginUseCases } from '@usecases/auth/login.usecases';
+import { LogoutUseCases } from '@usecases/auth/logout.usecases';
 import { SignupUseCases } from '@usecases/auth/signup.usecases';
 import { Response } from 'express';
 import { DataSource } from 'typeorm';
@@ -41,10 +40,12 @@ export class AuthController {
     private readonly signupUseCasesProxy: UseCaseProxy<SignupUseCases>,
     @Inject(UseCasesProxyModule.LOGIN_USECASES_PROXY)
     private readonly loginUseCasesProxy: UseCaseProxy<LoginUseCases>,
+    @Inject(UseCasesProxyModule.LOGOUT_USECASES_PROXY)
+    private readonly logoutUseCasesProxy: UseCaseProxy<LogoutUseCases>,
   ) {}
 
   @Post('signup')
-  @ApiOperation({ description: '화원 가입' })
+  @ApiOperation({ summary: '화원 가입' })
   @ApiBadRequestResponse({
     description: '요청 값이 잘못되었거나, 이메일이 중복됐을때',
     type: FormatException,
@@ -71,7 +72,7 @@ export class AuthController {
   @Post('login')
   @AuthLogin()
   @ApiBody({ type: LoginDto })
-  @ApiOperation({ description: '로그인(이메일, 비밀번호)' })
+  @ApiOperation({ summary: '로그인(이메일, 비밀번호)' })
   @ApiResponseType(BaseUserPresenter)
   async login(
     @User() user: UserModelWithoutPassword,
@@ -88,10 +89,39 @@ export class AuthController {
     return new BaseUserPresenter(user);
   }
 
-  @Get('rolecheck')
-  @AuthJwt(RolesGuard)
-  @Roles(RoleEnum.SELLER)
-  async roleCheck() {
-    return 'success';
+  @Post('refresh')
+  @AuthRefreshJwt()
+  @ApiResponseType()
+  @ApiOperation({ summary: '토큰 재발급' })
+  async refreshJwt(
+    @User() user: UserModelWithoutPassword,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const retAccess = this.loginUseCasesProxy
+      .getInstance()
+      .getJwtTokenAndCookie(user.id);
+
+    const retRefresh = await this.loginUseCasesProxy
+      .getInstance()
+      .getJwtRefreshTokenAndCookie(user.id);
+
+    res.setHeader('Set-Cookie', [retAccess.cookie, retRefresh.cookie]);
+    return 'Success';
+  }
+
+  @Post('logout')
+  @AuthJwt()
+  @ApiOperation({ summary: '로그아웃' })
+  @ApiResponseType()
+  async logout(
+    @User() user: UserModelWithoutPassword,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const cookies = await this.logoutUseCasesProxy
+      .getInstance()
+      .execute(user.id);
+    res.setHeader('Set-cookie', cookies);
+
+    return 'Success';
   }
 }
