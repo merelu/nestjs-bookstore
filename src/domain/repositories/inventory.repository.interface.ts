@@ -12,4 +12,18 @@ export interface IInventoryRepository {
   ): Promise<InventoryModel>;
 
   findOneById(id: number, conn?: EntityManager): Promise<InventoryModel | null>;
+
+  addStock(id: number, stock: number, conn?: EntityManager): Promise<void>;
+
+  substractStock(
+    id: number,
+    stock: number,
+    conn?: EntityManager,
+  ): Promise<void>;
+
+  addSelledStock(
+    id: number,
+    stock: number,
+    conn?: EntityManager,
+  ): Promise<void>;
 }

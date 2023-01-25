@@ -4,6 +4,7 @@ import { PointLogActionEnum } from '@domain/common/enum/point-log-action.enum';
 import { CreateOrderModel } from '@domain/model/database/order';
 import { CreateOrderProductModel } from '@domain/model/database/order-product';
 import { CreatePointLogModel } from '@domain/model/database/point-log';
+import { IInventoryRepository } from '@domain/repositories/inventory.repository.interface';
 import { IOrderProductRepository } from '@domain/repositories/order-product.repository.interface';
 import { IOrderRepository } from '@domain/repositories/order.repository.interface';
 import { IPointLogRepository } from '@domain/repositories/point-log.repository.interface';
@@ -20,6 +21,7 @@ export class AddOrderUseCases {
     private readonly pointLogRepository: IPointLogRepository,
     private readonly orderRepository: IOrderRepository,
     private readonly orderProductRepository: IOrderProductRepository,
+    private readonly inventoryRepository: IInventoryRepository,
     private readonly exceptionService: IException,
   ) {}
 
@@ -30,7 +32,10 @@ export class AddOrderUseCases {
     conn: EntityManager,
   ) {
     const product = await this.checkProduct(data.productId);
-    if (product.inventory && product.inventory.stock < data.orderCount) {
+    if (
+      !product.inventory ||
+      product.inventory.stock - product.inventory.selledStock < data.orderCount
+    ) {
       throw this.exceptionService.forbiddenException({
         error_code: CommonErrorCodeEnum.FORBIDDEN_REQUEST,
         error_text: '재고가 없습니다.',
@@ -63,8 +68,21 @@ export class AddOrderUseCases {
     await this.createOrderProduct(newOrderProduct, conn);
     await this.updatePoint(pointId, totalPrice, conn);
     await this.createPointLog(pointId, totalPrice, conn);
+    await this.updateInventory(product.inventory.id, data.orderCount, conn);
 
-    const result = this.orderRepository.findOneDetailById(order.id, conn);
+    const result = await this.getOrderDetailById(order.id, conn);
+
+    return result;
+  }
+
+  private async getOrderDetailById(orderId: number, conn: EntityManager) {
+    const result = await this.orderRepository.findOneDetailById(orderId, conn);
+    if (!result) {
+      throw this.exceptionService.internalServerErrorException({
+        error_code: CommonErrorCodeEnum.INTERNAL_SERVER,
+        error_text: '주문 정보를 가져올 수 없습니다.',
+      });
+    }
 
     return result;
   }
@@ -140,6 +158,25 @@ export class AddOrderUseCases {
       throw this.exceptionService.internalServerErrorException({
         error_code: CommonErrorCodeEnum.INTERNAL_SERVER,
         error_text: '포인트 차감 실패',
+      });
+    }
+  }
+
+  private async updateInventory(
+    inventoryId: number,
+    orderCount: number,
+    conn: EntityManager,
+  ) {
+    try {
+      await this.inventoryRepository.addSelledStock(
+        inventoryId,
+        orderCount,
+        conn,
+      );
+    } catch (err) {
+      throw this.exceptionService.internalServerErrorException({
+        error_code: CommonErrorCodeEnum.INTERNAL_SERVER,
+        error_text: '재고 변경 실패',
       });
     }
   }

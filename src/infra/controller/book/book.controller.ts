@@ -1,7 +1,9 @@
 import { RoleEnum } from '@domain/common/enum/role.enum';
+import { UserModelWithoutPassword } from '@domain/model/database/user';
 import { AuthJwt } from '@infra/common/decorators/auth-jwt.decorator';
 import { ApiResponseType } from '@infra/common/decorators/response.decorator';
 import { Roles } from '@infra/common/decorators/roles.decorator';
+import { User } from '@infra/common/decorators/user.decorator';
 import { RolesGuard } from '@infra/common/guards/roles.guard';
 import { UseCaseProxy } from '@infra/usecases-proxy/usecases-proxy';
 import { UseCasesProxyModule } from '@infra/usecases-proxy/usecases-proxy.module';
@@ -11,6 +13,7 @@ import {
   Inject,
   Param,
   ParseIntPipe,
+  Patch,
   Post,
   Res,
   StreamableFile,
@@ -28,6 +31,7 @@ import {
 } from '@nestjs/swagger';
 import { AddCoverImageUseCases } from '@usecases/book/add-cover-image.usecases';
 import { GetCoverImageUseCases } from '@usecases/book/get-cover-image.usecases';
+import { UpdateCoverImageUseCases } from '@usecases/book/update-cover-image.usecases';
 import { Response } from 'express';
 import { Readable } from 'stream';
 import { DataSource } from 'typeorm';
@@ -49,6 +53,8 @@ export class BookController {
     private readonly addCoverImageUseCasesProxy: UseCaseProxy<AddCoverImageUseCases>,
     @Inject(UseCasesProxyModule.GET_COVER_IMAGE_USECASES_PROXY)
     private readonly getCoverImageUseCasesProxy: UseCaseProxy<GetCoverImageUseCases>,
+    @Inject(UseCasesProxyModule.UPDATE_COVER_IMAGE_USECASES_PROXY)
+    private readonly updateCoverImageUseCasesProxy: UseCaseProxy<UpdateCoverImageUseCases>,
   ) {}
 
   @Post('cover')
@@ -103,5 +109,43 @@ export class BookController {
     });
 
     return new StreamableFile(stream);
+  }
+
+  @Patch(':id/cover')
+  @ApiOperation({
+    summary: '책 커버 이미지 수정',
+  })
+  @AuthJwt()
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({ type: UploadCoverImageDto })
+  @UseInterceptors(FileInterceptor('image'))
+  @ApiResponseType(UploadCoverImagePresenter)
+  async updateCoverImage(
+    @User() user: UserModelWithoutPassword,
+    @Param('id', ParseIntPipe) bookId: number,
+    @UploadedFile() image: Express.Multer.File,
+  ) {
+    const connection = this.dataSource.createQueryRunner();
+    await connection.connect();
+    await connection.startTransaction();
+    try {
+      const result = await this.updateCoverImageUseCasesProxy
+        .getInstance()
+        .execute(
+          user.id,
+          bookId,
+          image.originalname,
+          image.buffer,
+          connection.manager,
+        );
+
+      await connection.commitTransaction();
+      return new UploadCoverImagePresenter(result);
+    } catch (err) {
+      await connection.rollbackTransaction();
+      throw err;
+    } finally {
+      await connection.release();
+    }
   }
 }

@@ -8,7 +8,7 @@ export class UploadCoverImagePresenter {
   @ApiProperty()
   filename: string;
 
-  @ApiProperty()
+  @ApiProperty({ type: 'string', nullable: true })
   url: string | null;
 
   constructor(data: CoverImageModel) {

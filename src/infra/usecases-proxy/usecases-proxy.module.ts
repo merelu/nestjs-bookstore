@@ -31,6 +31,10 @@ import { AddProductUseCases } from '@usecases/product/add-product.usecases';
 import { AddOrderUseCases } from '@usecases/order/add-order.usecases';
 import { DatabaseOrderRepository } from '@infra/repositories/order.repository';
 import { DatabaseOrderProductRepository } from '@infra/repositories/order-product.repository';
+import { GetOrdersUseCases } from '@usecases/order/get-orders.usecases';
+import { CancelOrderUseCases } from '@usecases/order/cancel-order.usecases';
+import { CheckInventoryUseCases } from '@usecases/product/check-inventory.usecases';
+import { UpdateCoverImageUseCases } from '@usecases/book/update-cover-image.usecases';
 @Module({
   imports: [
     JwtServiceModule,
@@ -48,10 +52,15 @@ export class UseCasesProxyModule {
 
   static ADD_COVER_IMAGE_USECASES_PROXY = 'AddCoverImageUseCasesProxy';
   static GET_COVER_IMAGE_USECASES_PROXY = 'GetCoverImageUseCasesProxy';
+  static UPDATE_COVER_IMAGE_USECASES_PROXY = 'UpdateCoverImageUseCasesProxy';
 
   static ADD_PRODUCT_USECASES_PROXY = 'AddProductUseCasesProxy';
+  static CHECK_INVENTORY_USECASES_PROXY = 'CheckInventoryUseCasesProxy';
 
   static ADD_ORDER_USECASES_PROXY = 'AddOrderUseCasesProxy';
+  static GET_ORDERS_USECASES_PROXY = 'GetOrdersUseCasesProxy';
+
+  static CANCEL_ORDER_USECASES_PROXY = 'CancelOrderUseCasesProxy';
 
   static register(): DynamicModule {
     return {
@@ -179,6 +188,7 @@ export class UseCasesProxyModule {
             DatabasePointLogRepository,
             DatabaseOrderRepository,
             DatabaseOrderProductRepository,
+            DatabaseInventoryRepository,
             ExceptionService,
           ],
           provide: UseCasesProxyModule.ADD_ORDER_USECASES_PROXY,
@@ -188,6 +198,7 @@ export class UseCasesProxyModule {
             pointLogRepo: DatabasePointLogRepository,
             orderRepo: DatabaseOrderRepository,
             orderProductRepo: DatabaseOrderProductRepository,
+            inventoryRepo: DatabaseInventoryRepository,
             exceptionService: ExceptionService,
           ) =>
             new UseCaseProxy(
@@ -197,6 +208,60 @@ export class UseCasesProxyModule {
                 pointLogRepo,
                 orderRepo,
                 orderProductRepo,
+                inventoryRepo,
+                exceptionService,
+              ),
+            ),
+        },
+        {
+          inject: [DatabaseOrderRepository, ExceptionService],
+          provide: UseCasesProxyModule.GET_ORDERS_USECASES_PROXY,
+          useFactory: (
+            orderRepo: DatabaseOrderRepository,
+            exceptionService: ExceptionService,
+          ) =>
+            new UseCaseProxy(
+              new GetOrdersUseCases(orderRepo, exceptionService),
+            ),
+        },
+        {
+          inject: [DatabaseOrderRepository, ExceptionService],
+          provide: UseCasesProxyModule.CANCEL_ORDER_USECASES_PROXY,
+          useFactory: (
+            orderRepo: DatabaseOrderRepository,
+            exceptionService: ExceptionService,
+          ) =>
+            new UseCaseProxy(
+              new CancelOrderUseCases(orderRepo, exceptionService),
+            ),
+        },
+        {
+          inject: [DatabaseProductRepository, ExceptionService],
+          provide: UseCasesProxyModule.CHECK_INVENTORY_USECASES_PROXY,
+          useFactory: (
+            productRepo: DatabaseProductRepository,
+            exceptionService: ExceptionService,
+          ) =>
+            new UseCaseProxy(
+              new CheckInventoryUseCases(productRepo, exceptionService),
+            ),
+        },
+        {
+          inject: [
+            DatabaseProductRepository,
+            DatabaseCoverImageRepository,
+            ExceptionService,
+          ],
+          provide: UseCasesProxyModule.UPDATE_COVER_IMAGE_USECASES_PROXY,
+          useFactory: (
+            productRepo: DatabaseProductRepository,
+            coverImageRepo: DatabaseCoverImageRepository,
+            exceptionService: ExceptionService,
+          ) =>
+            new UseCaseProxy(
+              new UpdateCoverImageUseCases(
+                productRepo,
+                coverImageRepo,
                 exceptionService,
               ),
             ),
@@ -208,10 +273,16 @@ export class UseCasesProxyModule {
 
         UseCasesProxyModule.ADD_COVER_IMAGE_USECASES_PROXY,
         UseCasesProxyModule.GET_COVER_IMAGE_USECASES_PROXY,
+        UseCasesProxyModule.UPDATE_COVER_IMAGE_USECASES_PROXY,
 
         UseCasesProxyModule.ADD_PRODUCT_USECASES_PROXY,
 
+        UseCasesProxyModule.CHECK_INVENTORY_USECASES_PROXY,
+
         UseCasesProxyModule.ADD_ORDER_USECASES_PROXY,
+        UseCasesProxyModule.GET_ORDERS_USECASES_PROXY,
+
+        UseCasesProxyModule.CANCEL_ORDER_USECASES_PROXY,
       ],
     };
   }

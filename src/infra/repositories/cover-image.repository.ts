@@ -14,10 +14,42 @@ export class DatabaseCoverImageRepository implements ICoverImageRepository {
     @InjectRepository(CoverImage)
     private readonly coverImageEntityRepository: Repository<CoverImage>,
   ) {}
-  async findOneById(id: number): Promise<CoverImageModel | null> {
-    const result = await this.coverImageEntityRepository.findOne({
-      where: { id },
-    });
+
+  async updateImageData(
+    id: number,
+    filename: string,
+    data: Uint8Array,
+    conn?: EntityManager | undefined,
+  ): Promise<void> {
+    if (conn) {
+      await conn.getRepository(CoverImage).update(id, {
+        data,
+        filename,
+      });
+    } else {
+      await this.coverImageEntityRepository.update(id, {
+        data,
+        filename,
+      });
+    }
+  }
+
+  async findOneById(
+    id: number,
+    conn?: EntityManager,
+  ): Promise<CoverImageModel | null> {
+    let result: CoverImage | null = null;
+    if (conn) {
+      result = await conn.getRepository(CoverImage).findOne({
+        where: { id },
+        select: ['id', 'filename', 'url'],
+      });
+    } else {
+      result = await this.coverImageEntityRepository.findOne({
+        where: { id },
+        select: ['id', 'filename', 'url'],
+      });
+    }
 
     if (!result) {
       return null;
@@ -35,7 +67,9 @@ export class DatabaseCoverImageRepository implements ICoverImageRepository {
       .getRepository(CoverImage)
       .save(coverIamgeEntity);
     coverImage.url = data.url + `/${coverImage.id}`;
+    coverImage.data = data.data;
     const result = await conn.getRepository(CoverImage).save(coverImage);
+
     return this.toCoverIamge(result);
   }
 
@@ -55,7 +89,6 @@ export class DatabaseCoverImageRepository implements ICoverImageRepository {
   private toCoverImageEntity(data: CreateCoverImageModel): CoverImage {
     const result = new CoverImage();
     result.filename = data.filename;
-    result.data = data.data;
 
     return result;
   }

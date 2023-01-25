@@ -45,6 +45,72 @@ export class DatabaseInventoryRepository implements IInventoryRepository {
     return this.toInventory(result);
   }
 
+  async addStock(
+    id: number,
+    stock: number,
+    conn?: EntityManager,
+  ): Promise<void> {
+    if (conn) {
+      await conn.getRepository(Inventory).update(
+        { id },
+        {
+          stock: () => `"stock" + ${stock}`,
+        },
+      );
+    } else {
+      await this.inventoryEntityRepository.update(
+        { id },
+        {
+          stock: () => `"stock" + ${stock}`,
+        },
+      );
+    }
+  }
+
+  async substractStock(
+    id: number,
+    stock: number,
+    conn?: EntityManager,
+  ): Promise<void> {
+    if (conn) {
+      await conn.getRepository(Inventory).update(
+        { id },
+        {
+          stock: () => `"stock" - ${stock}`,
+        },
+      );
+    } else {
+      await this.inventoryEntityRepository.update(
+        { id },
+        {
+          stock: () => `"stock" - ${stock}`,
+        },
+      );
+    }
+  }
+
+  async addSelledStock(
+    id: number,
+    stock: number,
+    conn?: EntityManager,
+  ): Promise<void> {
+    if (conn) {
+      await conn.getRepository(Inventory).update(
+        { id },
+        {
+          selledStock: () => `"selled_stock" + ${stock}`,
+        },
+      );
+    } else {
+      await this.inventoryEntityRepository.update(
+        { id },
+        {
+          selledStock: () => `"selled_stock" + ${stock}`,
+        },
+      );
+    }
+  }
+
   private toInventory(data: Inventory): InventoryModel {
     const result = new InventoryModel();
 

@@ -6,7 +6,12 @@ import { IProductRepository } from '@domain/repositories/product.repository.inte
 import { Product } from '@infra/entities/product.entity';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { EntityManager, FindOptionsRelations, Repository } from 'typeorm';
+import {
+  EntityManager,
+  FindOptionsRelations,
+  FindOptionsWhere,
+  Repository,
+} from 'typeorm';
 
 @Injectable()
 export class DatabaseProductRepository implements IProductRepository {
@@ -14,6 +19,21 @@ export class DatabaseProductRepository implements IProductRepository {
     @InjectRepository(Product)
     private readonly productEntityRepository: Repository<Product>,
   ) {}
+  async findOneByQueryWithRelation(
+    query: FindOptionsWhere<ProductModel>,
+    relations: FindOptionsRelations<ProductModel>,
+  ): Promise<ProductModel | null> {
+    const result = await this.productEntityRepository.findOne({
+      where: query,
+      relations,
+    });
+
+    if (!result) {
+      return null;
+    }
+
+    return this.toProduct(result);
+  }
 
   async findOneByIdWithRelation(
     id: number,

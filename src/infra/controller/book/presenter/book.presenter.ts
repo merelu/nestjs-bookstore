@@ -12,19 +12,15 @@ export class BaseBookPresenter implements IBookModel {
   @ApiProperty()
   description: string;
 
-  @ApiProperty({ nullable: true })
-  coverImageId?: number;
-
   constructor(data: BookModel) {
     this.id = data.id;
     this.name = data.name;
     this.description = data.description;
-    this.coverImageId = data.coverImageId;
   }
 }
 
 export class BookDetailPresenter extends BaseBookPresenter {
-  @ApiProperty({ nullable: true })
+  @ApiProperty({ type: 'string', nullable: true })
   coverImageUrl?: string | null;
 
   @ApiProperty({ type: [AuthorPresenter] })

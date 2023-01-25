@@ -9,6 +9,7 @@ export class CoverImage extends CommonEntity implements ICoverImage {
 
   @Column({
     type: 'bytea',
+    nullable: true,
   })
   data: Uint8Array;
 

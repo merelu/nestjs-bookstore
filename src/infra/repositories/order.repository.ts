@@ -1,3 +1,4 @@
+import { OrderStateEnum } from '@domain/common/enum/order-state.enum';
 import { CreateOrderModel, OrderModel } from '@domain/model/database/order';
 import { IOrderRepository } from '@domain/repositories/order.repository.interface';
 import { Order } from '@infra/entities/order.entity';
@@ -11,6 +12,31 @@ export class DatabaseOrderRepository implements IOrderRepository {
     @InjectRepository(Order)
     private readonly orderEntityRepository: Repository<Order>,
   ) {}
+  async updateOrderState(
+    id: number,
+    orderState: OrderStateEnum,
+    conn?: EntityManager | undefined,
+  ): Promise<void> {
+    if (conn) {
+      await conn.getRepository(Order).update(id, {
+        orderState,
+      });
+    } else {
+      await this.orderEntityRepository.update(id, {
+        orderState,
+      });
+    }
+  }
+
+  async findOneById(id: number): Promise<OrderModel | null> {
+    const result = await this.orderEntityRepository.findOne({ where: { id } });
+
+    if (!result) {
+      return null;
+    }
+
+    return this.toOrder(result);
+  }
 
   async findOneDetailById(
     id: number,
@@ -21,19 +47,49 @@ export class DatabaseOrderRepository implements IOrderRepository {
       result = await conn
         .getRepository(Order)
         .createQueryBuilder('order')
-        .addSelect('book.name, coverImage.url')
-        .innerJoinAndSelect('order.orderProducts', 'orderProducts')
+        .where('order.id = :id', { id })
+        .select([
+          'order',
+          'orderProducts',
+          'product',
+          'inventory',
+          'book',
+          'seller',
+          'authorBooks',
+          'author',
+          'coverImage.url',
+        ])
+        .innerJoin('order.orderProducts', 'orderProducts')
         .innerJoin('orderProducts.product', 'product')
         .innerJoin('product.book', 'book')
+        .innerJoin('product.seller', 'seller')
+        .innerJoin('product.inventory', 'inventory')
+        .innerJoin('book.authorBooks', 'authorBooks')
+        .innerJoin('authorBooks.author', 'author')
         .innerJoin('book.coverImage', 'coverImage')
         .getOne();
     } else {
       result = await this.orderEntityRepository
         .createQueryBuilder('order')
-        .addSelect('book.name, coverImage.url')
-        .innerJoinAndSelect('order.orderProducts', 'orderProducts')
+        .where('order.id = :id', { id })
+        .select([
+          'order',
+          'orderProducts',
+          'product',
+          'inventory',
+          'book',
+          'seller',
+          'authorBooks',
+          'author',
+          'coverImage.url',
+        ])
+        .innerJoin('order.orderProducts', 'orderProducts')
         .innerJoin('orderProducts.product', 'product')
         .innerJoin('product.book', 'book')
+        .innerJoin('product.seller', 'seller')
+        .innerJoin('product.inventory', 'inventory')
+        .innerJoin('book.authorBooks', 'authorBooks')
+        .innerJoin('authorBooks.author', 'author')
         .innerJoin('book.coverImage', 'coverImage')
         .getOne();
     }
@@ -43,6 +99,35 @@ export class DatabaseOrderRepository implements IOrderRepository {
     }
 
     return this.toOrder(result);
+  }
+
+  async findByBuyerId(buyerId: number): Promise<OrderModel[]> {
+    const result = await this.orderEntityRepository
+      .createQueryBuilder('order')
+      .where('buyer_id = :buyerId', { buyerId })
+      .select([
+        'order',
+        'orderProducts',
+        'product',
+        // 'inventory',
+        'book',
+        'seller',
+        'authorBooks',
+        'author',
+        'coverImage.url',
+      ])
+      .innerJoin('order.orderProducts', 'orderProducts')
+      .innerJoin('orderProducts.product', 'product')
+      .innerJoin('product.book', 'book')
+      .innerJoin('product.seller', 'seller')
+      // .innerJoin('product.inventory', 'inventory')
+      .innerJoin('book.authorBooks', 'authorBooks')
+      .innerJoin('authorBooks.author', 'author')
+      .innerJoin('book.coverImage', 'coverImage')
+      .orderBy('order.order_date', 'DESC')
+      .getMany();
+
+    return result.map((i) => this.toOrder(i));
   }
 
   async create(

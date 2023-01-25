@@ -1,4 +1,4 @@
-import { OrderStatusEnum } from '@domain/common/enum/order-status.enum';
+import { OrderStateEnum } from '@domain/common/enum/order-state.enum';
 import { IOrderModel } from '@domain/model/database/order';
 import { OrderProductModel } from '@domain/model/database/order-product';
 import { UserModel } from '@domain/model/database/user';
@@ -11,10 +11,10 @@ import { User } from './user.entity';
 export class Order extends CommonEntity implements IOrderModel {
   @Column({
     type: 'enum',
-    enum: OrderStatusEnum,
-    default: OrderStatusEnum.READY,
+    enum: OrderStateEnum,
+    default: OrderStateEnum.ORDER,
   })
-  orderState: OrderStatusEnum;
+  orderState: OrderStateEnum;
 
   @Column({ type: 'integer' })
   usePoint: number;
