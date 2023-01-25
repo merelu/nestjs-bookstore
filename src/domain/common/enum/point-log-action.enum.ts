@@ -1,4 +1,5 @@
 export enum PointLogActionEnum {
   SIGNUP = 'SIGNUP',
-  ORDER_PRODUT = 'ORDER_PRODUCT',
+  ORDER_PRODUCT = 'ORDER_PRODUCT',
+  ORDER_REFUND = 'ORDER_REFUND',
 }

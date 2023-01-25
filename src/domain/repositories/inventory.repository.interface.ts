@@ -26,4 +26,10 @@ export interface IInventoryRepository {
     stock: number,
     conn?: EntityManager,
   ): Promise<void>;
+
+  substractSelledStock(
+    id: number,
+    stock: number,
+    conn?: EntityManager,
+  ): Promise<void>;
 }

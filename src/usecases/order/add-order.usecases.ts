@@ -191,7 +191,7 @@ export class AddOrderUseCases {
     newPointLog.addPoint = 0;
     newPointLog.usePoint = usePoint;
     newPointLog.content = '상품 포인트 결제';
-    newPointLog.action = PointLogActionEnum.ORDER_PRODUT;
+    newPointLog.action = PointLogActionEnum.ORDER_PRODUCT;
 
     try {
       const result = await this.pointLogRepository.create(newPointLog, conn);

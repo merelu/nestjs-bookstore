@@ -108,13 +108,20 @@ export class OrderController {
     @User() user: UserModelWithoutPassword,
     @Param('id', ParseIntPipe) orderId: number,
   ) {
+    if (!user.pointId) {
+      throw this.exceptionService.forbiddenException({
+        error_code: CommonErrorCodeEnum.FORBIDDEN_REQUEST,
+        error_text:
+          '유저 포인트 정보가 없어서 주문 취소 요청이 거절 되었습니다.',
+      });
+    }
     const connection = this.dataSource.createQueryRunner();
     await connection.connect();
     await connection.startTransaction();
     try {
       const result = await this.cancelOrderUseCasesProxy
         .getInstance()
-        .execute(user.id, orderId, connection.manager);
+        .execute(user.id, user.pointId, orderId, connection.manager);
 
       await connection.commitTransaction();
 

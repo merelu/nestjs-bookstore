@@ -14,6 +14,7 @@ export class DatabaseInventoryRepository implements IInventoryRepository {
     @InjectRepository(Inventory)
     private readonly inventoryEntityRepository: Repository<Inventory>,
   ) {}
+
   async create(
     data: CreateInventoryModel,
     conn: EntityManager,
@@ -106,6 +107,28 @@ export class DatabaseInventoryRepository implements IInventoryRepository {
         { id },
         {
           selledStock: () => `"selled_stock" + ${stock}`,
+        },
+      );
+    }
+  }
+
+  async substractSelledStock(
+    id: number,
+    stock: number,
+    conn?: EntityManager | undefined,
+  ): Promise<void> {
+    if (conn) {
+      await conn.getRepository(Inventory).update(
+        { id },
+        {
+          selledStock: () => `"selled_stock" - ${stock}`,
+        },
+      );
+    } else {
+      await this.inventoryEntityRepository.update(
+        { id },
+        {
+          selledStock: () => `"selled_stock" - ${stock}`,
         },
       );
     }

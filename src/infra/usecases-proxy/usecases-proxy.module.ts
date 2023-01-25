@@ -238,14 +238,29 @@ export class UseCasesProxyModule {
             ),
         },
         {
-          inject: [DatabaseOrderRepository, ExceptionService],
+          inject: [
+            DatabaseOrderRepository,
+            DatabaseInventoryRepository,
+            DatabasePointRepository,
+            DatabasePointLogRepository,
+            ExceptionService,
+          ],
           provide: UseCasesProxyModule.CANCEL_ORDER_USECASES_PROXY,
           useFactory: (
             orderRepo: DatabaseOrderRepository,
+            inventoryRepo: DatabaseInventoryRepository,
+            pointRepo: DatabasePointRepository,
+            pointLogRepo: DatabasePointLogRepository,
             exceptionService: ExceptionService,
           ) =>
             new UseCaseProxy(
-              new CancelOrderUseCases(orderRepo, exceptionService),
+              new CancelOrderUseCases(
+                orderRepo,
+                inventoryRepo,
+                pointRepo,
+                pointLogRepo,
+                exceptionService,
+              ),
             ),
         },
         {
