@@ -38,9 +38,15 @@ async function bootstrap() {
 
   if (env !== 'production') {
     const config = new DocumentBuilder()
-      .addBearerAuth()
       .setTitle('fanddle-test')
-      .setDescription('스웨거')
+      .setDescription(
+        `<p>스웨거 문서입니다. 쿠키를 사용한 인증 방식을 제공합니다.</p> 
+         <p>스웨거상 수동 쿠키, 토큰 입력 Auth 기능은 제공하지 않습니다.</p>
+         <p>로그인 API를 실행하게 되면 로그인이 되고 스웨거문서 사이트에 Set-Cookie되므로
+         인증이 필요한 API를 실행할 수 있습니다.</p>
+         <p>인증이 불필요한 API를 태스트 하기 위해서는 로그아웃 API를 실행하고 실행해주세요!</p>
+         `,
+      )
       .setVersion('0.0.1')
       .build();
 
