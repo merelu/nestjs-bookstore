@@ -38,7 +38,7 @@ async function bootstrap() {
 
   if (env !== 'production') {
     const config = new DocumentBuilder()
-      .setTitle('fanddle-test')
+      .setTitle('Bookstore')
       .setDescription(
         `<p>스웨거 문서입니다. 쿠키를 사용한 인증 방식을 제공합니다.</p> 
          <p>스웨거상 수동 쿠키, 토큰 입력 Auth 기능은 제공하지 않습니다.</p>
@@ -63,6 +63,6 @@ async function bootstrap() {
     });
   }
 
-  await app.listen(3001);
+  await app.listen(process.env.PORT || 3001);
 }
 bootstrap();
