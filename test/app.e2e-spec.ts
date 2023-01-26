@@ -4,6 +4,7 @@ import request from 'supertest';
 import { AppModule } from 'src/app.module';
 import cookieParser from 'cookie-parser';
 import path from 'path';
+import fs from 'fs';
 
 describe('시나리오 테스트', () => {
   let app: INestApplication;
@@ -80,14 +81,17 @@ describe('시나리오 테스트', () => {
   describe('상품 등록', () => {
     let coverImageId = 0;
     it('이미지 업로드', async () => {
+      const jpegImage = fs.createReadStream(
+        path.join(__dirname, 'test-cover-image.jpeg'),
+      );
+
       const result = await request(app.getHttpServer())
         .post('/book/cover')
         .set('Cookie', [sellerAuthCookie])
-        .attach('image', path.join(__dirname, 'test-cover-image.jpeg'), {
-          filename: 'test-cover-image.jpeg',
-          contentType: 'multipart/form-data',
-        })
-        .expect(201);
+        .field('Content-Type', 'multipart/form-data')
+        .attach('image', jpegImage);
+
+      console.log(result);
 
       expect('test-cover-image.jpeg').toEqual(result.body.filename);
       coverImageId = result.body.id;
