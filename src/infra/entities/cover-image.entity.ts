@@ -1,12 +1,13 @@
 import { BookModel } from '@domain/model/database/book';
 import { ICoverImage } from '@domain/model/database/cover-image';
 import { UserModel } from '@domain/model/database/user';
-import { Column, Entity, ManyToOne, OneToOne } from 'typeorm';
+import { Column, Entity, Index, ManyToOne, OneToOne } from 'typeorm';
 import { Book } from './book.entity';
 import { CommonEntity } from './common.entity';
 import { User } from './user.entity';
 
 @Entity()
+@Index('CoverImage_uploader_id', ['uploaderId'], {})
 export class CoverImage extends CommonEntity implements ICoverImage {
   @Column({ type: 'varchar' })
   filename: string;

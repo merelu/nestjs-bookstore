@@ -1,12 +1,13 @@
 import { AuthorModel } from '@domain/model/database/author';
 import { IAuthorBookModel } from '@domain/model/database/author-book';
 import { BookModel } from '@domain/model/database/book';
-import { Column, Entity, ManyToOne } from 'typeorm';
+import { Column, Entity, ManyToOne, Unique } from 'typeorm';
 import { Author } from './author.entity';
 import { Book } from './book.entity';
 import { CommonEntity } from './common.entity';
 
 @Entity()
+@Unique(['authorId', 'bookId'])
 export class AuthorBook extends CommonEntity implements IAuthorBookModel {
   @Column({ type: 'integer', nullable: true })
   authorId?: number;

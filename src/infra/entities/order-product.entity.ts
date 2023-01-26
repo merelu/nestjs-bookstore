@@ -1,12 +1,13 @@
 import { OrderModel } from '@domain/model/database/order';
 import { IOrderProductModel } from '@domain/model/database/order-product';
 import { ProductModel } from '@domain/model/database/product';
-import { Column, Entity, ManyToOne } from 'typeorm';
+import { Column, Entity, ManyToOne, Unique } from 'typeorm';
 import { CommonEntity } from './common.entity';
 import { Order } from './order.entity';
 import { Product } from './product.entity';
 
 @Entity()
+@Unique(['orderId', 'productId'])
 export class OrderProduct extends CommonEntity implements IOrderProductModel {
   @Column({ type: 'integer' })
   orderCount: number;

@@ -6,6 +6,7 @@ import { UserModel } from '@domain/model/database/user';
 import {
   Column,
   Entity,
+  Index,
   JoinColumn,
   ManyToOne,
   OneToMany,
@@ -18,6 +19,8 @@ import { OrderProduct } from './order-product.entity';
 import { User } from './user.entity';
 
 @Entity()
+@Index('Product_seller_id', ['sellerId'], {})
+@Index('Product_book_id', ['bookId'], {})
 export class Product extends CommonEntity implements IProductModel {
   @Column({ type: 'integer', nullable: false })
   price: number;

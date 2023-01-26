@@ -2,12 +2,20 @@ import { OrderStateEnum } from '@domain/common/enum/order-state.enum';
 import { IOrderModel } from '@domain/model/database/order';
 import { OrderProductModel } from '@domain/model/database/order-product';
 import { UserModel } from '@domain/model/database/user';
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
+import {
+  Column,
+  Entity,
+  Index,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+} from 'typeorm';
 import { CommonEntity } from './common.entity';
 import { OrderProduct } from './order-product.entity';
 import { User } from './user.entity';
 
 @Entity()
+@Index('Order_buyer_id', ['buyerId'], {})
 export class Order extends CommonEntity implements IOrderModel {
   @Column({
     type: 'enum',
