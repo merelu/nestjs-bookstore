@@ -19,7 +19,9 @@ import {
   Post,
 } from '@nestjs/common';
 import {
+  ApiBadRequestResponse,
   ApiExtraModels,
+  ApiForbiddenResponse,
   ApiInternalServerErrorResponse,
   ApiOperation,
   ApiTags,
@@ -35,7 +37,11 @@ import { ProductDetailPresenter } from './presenter/product.presenter';
 @Controller('product')
 @ApiTags('Product')
 @ApiInternalServerErrorResponse({
-  description: 'Internal server error',
+  description: '서버오류',
+  type: FormatException,
+})
+@ApiBadRequestResponse({
+  description: '요청 Param이 잘못됐을때',
   type: FormatException,
 })
 @ApiExtraModels(ProductDetailPresenter)
@@ -50,10 +56,14 @@ export class ProductController {
   ) {}
 
   @Get(':id/inventory')
-  @ApiOperation({ summary: '상품 재고 확인 (판매자용)' })
+  @ApiOperation({ summary: '상품 재고 확인(Seller)' })
   @AuthJwt(RolesGuard)
   @Roles(RoleEnum.SELLER)
   @ApiResponseType(InventoryPresenter)
+  @ApiForbiddenResponse({
+    description: '확인 권한이 없을때',
+    type: FormatException,
+  })
   async checkInventory(
     @User() user: UserModelWithoutPassword,
     @Param('id', ParseIntPipe) productId: number,
@@ -73,10 +83,14 @@ export class ProductController {
   }
 
   @Post('')
-  @ApiOperation({ summary: '상품 판매 등록' })
+  @ApiOperation({ summary: '상품 판매 등록(Seller)' })
   @AuthJwt(RolesGuard)
   @Roles(RoleEnum.SELLER)
   @ApiResponseType(ProductDetailPresenter)
+  @ApiForbiddenResponse({
+    description: '등록 권한이 없을때',
+    type: FormatException,
+  })
   async addProduct(
     @User() user: UserModelWithoutPassword,
     @Body() data: AddProductDto,

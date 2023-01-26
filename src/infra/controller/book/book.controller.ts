@@ -22,9 +22,11 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import {
+  ApiBadRequestResponse,
   ApiBody,
   ApiConsumes,
   ApiExtraModels,
+  ApiForbiddenResponse,
   ApiInternalServerErrorResponse,
   ApiOperation,
   ApiTags,
@@ -42,7 +44,11 @@ import { UploadCoverImagePresenter } from './presenter/upload-cover-image.presen
 @Controller('book')
 @ApiTags('Book')
 @ApiInternalServerErrorResponse({
-  description: 'Internal server error',
+  description: '서버오류',
+  type: FormatException,
+})
+@ApiBadRequestResponse({
+  description: '요청 Param이 잘못됐을때',
   type: FormatException,
 })
 @ApiExtraModels(UploadCoverImagePresenter)
@@ -62,7 +68,7 @@ export class BookController {
   @Roles(RoleEnum.SELLER)
   @ApiConsumes('multipart/form-data')
   @ApiOperation({
-    summary: '커버이미지 업로드',
+    summary: '커버이미지 업로드(Seller)',
     description: 'Content-type : multipart/form-data',
   })
   @ApiBody({ type: UploadCoverImageDto })
@@ -89,7 +95,7 @@ export class BookController {
 
   @Get('cover/:id')
   @ApiOperation({
-    summary: '이미지 확인',
+    summary: '이미지 확인(Public)',
     description:
       'id(coverImageId)에 해당하는 이미지를 보내줍니다. 예시) {baseURL}/book/cover/:id',
   })
@@ -113,13 +119,18 @@ export class BookController {
 
   @Patch(':id/cover')
   @ApiOperation({
-    summary: '책 커버 이미지 수정',
+    summary: '책 커버 이미지 수정(Seller)',
   })
-  @AuthJwt()
+  @AuthJwt(RolesGuard)
+  @Roles(RoleEnum.SELLER)
   @ApiConsumes('multipart/form-data')
   @ApiBody({ type: UploadCoverImageDto })
   @UseInterceptors(FileInterceptor('image'))
   @ApiResponseType(UploadCoverImagePresenter)
+  @ApiForbiddenResponse({
+    description: '수정 권한이 없을때',
+    type: FormatException,
+  })
   async updateCoverImage(
     @User() user: UserModelWithoutPassword,
     @Param('id', ParseIntPipe) bookId: number,

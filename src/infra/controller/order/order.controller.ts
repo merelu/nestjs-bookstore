@@ -20,7 +20,9 @@ import {
   Post,
 } from '@nestjs/common';
 import {
+  ApiBadRequestResponse,
   ApiExtraModels,
+  ApiForbiddenResponse,
   ApiInternalServerErrorResponse,
   ApiOperation,
   ApiTags,
@@ -36,7 +38,11 @@ import { OrderDetailPresenter } from './presenter/order.presenter';
 @Controller('order')
 @ApiTags('Order')
 @ApiInternalServerErrorResponse({
-  description: 'Internal server error',
+  description: '서버오류',
+  type: FormatException,
+})
+@ApiBadRequestResponse({
+  description: '요청 Param이 잘못됐을때',
   type: FormatException,
 })
 @ApiExtraModels(OrderDetailPresenter)
@@ -53,10 +59,14 @@ export class OrderController {
   ) {}
 
   @Post('')
-  @ApiOperation({ summary: '주문' })
+  @ApiOperation({ summary: '주문(Customer)' })
   @AuthJwt(RolesGuard)
   @Roles(RoleEnum.CUSTOMER)
   @ApiResponseType(OrderDetailPresenter)
+  @ApiForbiddenResponse({
+    description: '유저 포인트 정보, 잔액, 상품재고가 확인 불가능하거나 없을때',
+    type: FormatException,
+  })
   async addOrder(
     @User() user: UserModelWithoutPassword,
     @Body() data: AddOrderDto,
@@ -87,10 +97,14 @@ export class OrderController {
   }
 
   @Get('list')
-  @ApiOperation({ summary: '내 주문 목록' })
+  @ApiOperation({ summary: '내 주문 목록(Customer)' })
   @AuthJwt(RolesGuard)
   @Roles(RoleEnum.CUSTOMER)
   @ApiResponseType(OrderDetailPresenter)
+  @ApiForbiddenResponse({
+    description: '확인 권한이 없을때',
+    type: FormatException,
+  })
   async getOrdersByMe(@User() user: UserModelWithoutPassword) {
     const result = await this.getOrdersUseCasesProxy
       .getInstance()
@@ -100,10 +114,14 @@ export class OrderController {
   }
 
   @Patch(':id/cancel')
-  @ApiOperation({ summary: '주문 취소' })
+  @ApiOperation({ summary: '주문 취소(Customer)' })
   @AuthJwt(RolesGuard)
   @Roles(RoleEnum.CUSTOMER)
   @ApiResponseType(OrderDetailPresenter)
+  @ApiForbiddenResponse({
+    description: '취소 권한이 없을때',
+    type: FormatException,
+  })
   async cancelOrder(
     @User() user: UserModelWithoutPassword,
     @Param('id', ParseIntPipe) orderId: number,

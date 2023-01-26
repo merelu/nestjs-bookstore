@@ -93,7 +93,7 @@ export class AddOrderUseCases {
     if (!result) {
       throw this.exceptionService.forbiddenException({
         error_code: CommonErrorCodeEnum.FORBIDDEN_REQUEST,
-        error_text: '포인트 사용 권한이 없는 유저입니다.',
+        error_text: '유저 포인트 정보가 없어서 주문 요청이 거절 되었습니다.',
       });
     }
 

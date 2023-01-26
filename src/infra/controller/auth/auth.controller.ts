@@ -15,6 +15,7 @@ import {
   ApiInternalServerErrorResponse,
   ApiOperation,
   ApiTags,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { LoginUseCases } from '@usecases/auth/login.usecases';
 import { LogoutUseCases } from '@usecases/auth/logout.usecases';
@@ -29,7 +30,11 @@ import { SignupDto } from './dto/signup.dto';
 @Controller('auth')
 @ApiTags('Auth')
 @ApiInternalServerErrorResponse({
-  description: 'Internal server error',
+  description: '서버오류',
+  type: FormatException,
+})
+@ApiBadRequestResponse({
+  description: '요청 Param이 잘못됐을때',
   type: FormatException,
 })
 @ApiExtraModels(FormatException, BaseUserPresenter)
@@ -45,7 +50,7 @@ export class AuthController {
   ) {}
 
   @Post('signup')
-  @ApiOperation({ summary: '화원 가입' })
+  @ApiOperation({ summary: '화원 가입(Public)' })
   @ApiBadRequestResponse({
     description: '요청 값이 잘못되었거나, 이메일이 중복됐을때',
     type: FormatException,
@@ -72,8 +77,12 @@ export class AuthController {
   @Post('login')
   @AuthLogin()
   @ApiBody({ type: LoginDto })
-  @ApiOperation({ summary: '로그인(이메일, 비밀번호)' })
+  @ApiOperation({ summary: '로그인(이메일, 비밀번호)(Public)' })
   @ApiResponseType(BaseUserPresenter)
+  @ApiUnauthorizedResponse({
+    description: '인증 정보가 잘못됐을때',
+    type: FormatException,
+  })
   async login(
     @User() user: UserModelWithoutPassword,
     @Res({ passthrough: true }) res: Response,
@@ -92,7 +101,7 @@ export class AuthController {
   @Post('refresh')
   @AuthRefreshJwt()
   @ApiResponseType()
-  @ApiOperation({ summary: '토큰 재발급' })
+  @ApiOperation({ summary: '토큰 재발급(Public)' })
   async refreshJwt(
     @User() user: UserModelWithoutPassword,
     @Res({ passthrough: true }) res: Response,
@@ -111,8 +120,12 @@ export class AuthController {
 
   @Post('logout')
   @AuthJwt()
-  @ApiOperation({ summary: '로그아웃' })
+  @ApiOperation({ summary: '로그아웃(Public)' })
   @ApiResponseType()
+  @ApiInternalServerErrorResponse({
+    description: '로그아웃 실패',
+    type: FormatException,
+  })
   async logout(
     @User() user: UserModelWithoutPassword,
     @Res({ passthrough: true }) res: Response,

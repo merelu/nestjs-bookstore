@@ -4,7 +4,7 @@ import { DataSource } from 'typeorm';
 
 @Controller('user')
 @ApiTags('User')
-@ApiResponse({ status: 500, description: 'Internal server error' })
+@ApiResponse({ status: 500, description: '서버오류' })
 @ApiExtraModels()
 export class UserController {
   constructor(private readonly dataSource: DataSource) {}
