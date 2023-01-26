@@ -2,8 +2,8 @@ import {
   utilities as nestWinstonModuleUtilities,
   WinstonModule,
 } from 'nest-winston';
-import * as winstonDaily from 'winston-daily-rotate-file';
-import * as winston from 'winston';
+import winstonDaily from 'winston-daily-rotate-file';
+import winston from 'winston';
 
 const env = process.env.NODE_ENV;
 const logDir = __dirname + '/../../../logs';
