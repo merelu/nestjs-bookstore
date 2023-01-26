@@ -1,3 +1,4 @@
+import { CommonErrorCodeEnum } from '@domain/common/enum/error-code.enum';
 import { RoleEnum } from '@domain/common/enum/role.enum';
 import { UserModelWithoutPassword } from '@domain/model/database/user';
 import { AuthJwt } from '@infra/common/decorators/auth-jwt.decorator';
@@ -5,14 +6,18 @@ import { ApiResponseType } from '@infra/common/decorators/response.decorator';
 import { Roles } from '@infra/common/decorators/roles.decorator';
 import { User } from '@infra/common/decorators/user.decorator';
 import { RolesGuard } from '@infra/common/guards/roles.guard';
+import { ParseIntPipe } from '@infra/common/validation-pipe/parse-int.pipe';
 import { UseCaseProxy } from '@infra/usecases-proxy/usecases-proxy';
 import { UseCasesProxyModule } from '@infra/usecases-proxy/usecases-proxy.module';
 import {
+  BadRequestException,
   Controller,
+  FileTypeValidator,
   Get,
   Inject,
+  MaxFileSizeValidator,
   Param,
-  ParseIntPipe,
+  ParseFilePipe,
   Patch,
   Post,
   Res,
@@ -76,7 +81,22 @@ export class BookController {
   @ApiResponseType(UploadCoverImagePresenter)
   async uploadCoverImage(
     @User() user: UserModelWithoutPassword,
-    @UploadedFile() image: Express.Multer.File,
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new MaxFileSizeValidator({ maxSize: 5000000 }),
+          new FileTypeValidator({
+            fileType: /(jpg|jpeg|png)$/,
+          }),
+        ],
+        exceptionFactory: (error) =>
+          new BadRequestException({
+            error_code: CommonErrorCodeEnum.INVALID_PARAM,
+            error_text: error,
+          }),
+      }),
+    )
+    image: Express.Multer.File,
   ) {
     const connection = this.dataSource.createQueryRunner();
     await connection.connect();
@@ -137,7 +157,22 @@ export class BookController {
   async updateCoverImage(
     @User() user: UserModelWithoutPassword,
     @Param('id', ParseIntPipe) bookId: number,
-    @UploadedFile() image: Express.Multer.File,
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new MaxFileSizeValidator({ maxSize: 5000000 }),
+          new FileTypeValidator({
+            fileType: /(jpg|jpeg|png)$/,
+          }),
+        ],
+        exceptionFactory: (error) =>
+          new BadRequestException({
+            error_code: CommonErrorCodeEnum.INVALID_PARAM,
+            error_text: error,
+          }),
+      }),
+    )
+    image: Express.Multer.File,
   ) {
     const connection = this.dataSource.createQueryRunner();
     await connection.connect();

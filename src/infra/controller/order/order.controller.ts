@@ -6,6 +6,7 @@ import { ApiResponseType } from '@infra/common/decorators/response.decorator';
 import { Roles } from '@infra/common/decorators/roles.decorator';
 import { User } from '@infra/common/decorators/user.decorator';
 import { RolesGuard } from '@infra/common/guards/roles.guard';
+import { ParseIntPipe } from '@infra/common/validation-pipe/parse-int.pipe';
 import { ExceptionService } from '@infra/services/exception/exception.service';
 import { UseCaseProxy } from '@infra/usecases-proxy/usecases-proxy';
 import { UseCasesProxyModule } from '@infra/usecases-proxy/usecases-proxy.module';
@@ -15,7 +16,6 @@ import {
   Get,
   Inject,
   Param,
-  ParseIntPipe,
   Patch,
   Post,
 } from '@nestjs/common';
