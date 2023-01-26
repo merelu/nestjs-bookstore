@@ -67,7 +67,7 @@ export class ProductController {
     const result = await this.getProductsUseCasesProxy
       .getInstance()
       .getProductsWithPagination(query);
-    console.log(result);
+
     return result.map((product) => new ProductDetailPresenter(product));
   }
 

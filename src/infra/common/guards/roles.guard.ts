@@ -18,7 +18,6 @@ export class RolesGuard implements CanActivate {
   ) {}
 
   canActivate(context: ExecutionContext): boolean {
-    console.log('가드실행');
     const roles = this.reflector.get<string[]>('roles', context.getHandler());
 
     if (!roles) {
@@ -27,7 +26,7 @@ export class RolesGuard implements CanActivate {
 
     const request = context.switchToHttp().getRequest();
     const user = request.user;
-    console.log(user);
+
     if (!user) {
       throw this.exceptionService.forbiddenException({
         error_code: CommonErrorCodeEnum.FORBIDDEN_REQUEST,

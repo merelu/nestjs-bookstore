@@ -12,7 +12,6 @@ export class LogoutUseCases {
     try {
       await this.redisCacheService.del('refresh' + userId);
     } catch (err) {
-      console.log(err);
       throw this.exceptionService.internalServerErrorException({
         error_code: CommonErrorCodeEnum.INTERNAL_SERVER,
         error_text: '로그아웃 실패',

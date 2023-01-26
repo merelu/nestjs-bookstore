@@ -19,7 +19,7 @@ export const getTypeOrmModuleOptions = (
     synchronize: config.getDatabaseSync(),
     schema: config.getDatabaseSchema(),
     autoLoadEntities: true,
-    logging: true,
+    logging: false,
     // migrationsRun: true,
     // migrations: [__dirname + '/migrations/**/*{.ts,.js}'],
     // cli: {

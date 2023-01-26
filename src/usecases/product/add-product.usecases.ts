@@ -68,7 +68,7 @@ export class AddProductUseCases {
     const result = await this.coverImageRepository.findOneByIdWithoutData(
       coverImageId,
     );
-    console.log(result);
+
     if (!result) {
       throw this.exceptionService.badRequestException({
         error_code: CommonErrorCodeEnum.INVALID_PARAM,
@@ -155,7 +155,6 @@ export class AddProductUseCases {
       const result = await this.productRepository.create(data, conn);
       return result;
     } catch (err) {
-      console.log(err);
       throw this.exceptionService.internalServerErrorException({
         error_code: CommonErrorCodeEnum.INTERNAL_SERVER,
         error_text: '상품 생성 실패',
