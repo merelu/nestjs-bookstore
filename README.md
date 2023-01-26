@@ -2,9 +2,9 @@
 
 북스토어 서버 어플리케이션
 
-스키마 : [ERD_CLOUD_LINK]('https://www.erdcloud.com/d/MFdNykTpcGG3X29ZN')
+스키마 : [ERD_CLOUD_LINK](https://www.erdcloud.com/d/MFdNykTpcGG3X29ZN)
 
-스웨거 : [http://localhost:3001/doc]('http://localhost:3001/doc')
+스웨거 : [http://localhost:3001/doc](http://localhost:3001/doc)
 (서버를 실행해야 볼 수 있습니다.)
 
 # 설치
