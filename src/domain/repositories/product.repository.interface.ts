@@ -1,3 +1,4 @@
+import { IPagination } from '@domain/model/common/pagination';
 import {
   CreateProductModel,
   ProductModel,
@@ -13,6 +14,12 @@ export interface IProductRepository {
     id: number,
     conn?: EntityManager,
   ): Promise<ProductModel | null>;
+
+  findDetailWithPagination(
+    page: number,
+    size: number,
+    requestedAt: Date,
+  ): Promise<ProductModel[]>;
 
   findOneByIdWithRelation(
     id: number,

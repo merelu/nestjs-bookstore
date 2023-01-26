@@ -36,6 +36,7 @@ import { CancelOrderUseCases } from '@usecases/order/cancel-order.usecases';
 import { CheckInventoryUseCases } from '@usecases/product/check-inventory.usecases';
 import { UpdateCoverImageUseCases } from '@usecases/book/update-cover-image.usecases';
 import { LogoutUseCases } from '@usecases/auth/logout.usecases';
+import { GetProductsUseCases } from '@usecases/product/get-products.usecases';
 @Module({
   imports: [
     JwtServiceModule,
@@ -58,6 +59,7 @@ export class UseCasesProxyModule {
 
   static ADD_PRODUCT_USECASES_PROXY = 'AddProductUseCasesProxy';
   static CHECK_INVENTORY_USECASES_PROXY = 'CheckInventoryUseCasesProxy';
+  static GET_PRODUCTS_USECASES_PROXY = 'GetProductsUseCasesProxy';
 
   static ADD_ORDER_USECASES_PROXY = 'AddOrderUseCasesProxy';
   static GET_ORDERS_USECASES_PROXY = 'GetOrdersUseCasesProxy';
@@ -294,6 +296,12 @@ export class UseCasesProxyModule {
               ),
             ),
         },
+        {
+          inject: [DatabaseProductRepository],
+          provide: UseCasesProxyModule.GET_PRODUCTS_USECASES_PROXY,
+          useFactory: (productRepo: DatabaseProductRepository) =>
+            new UseCaseProxy(new GetProductsUseCases(productRepo)),
+        },
       ],
       exports: [
         UseCasesProxyModule.SIGNUP_USECASES_PROXY,
@@ -305,6 +313,7 @@ export class UseCasesProxyModule {
         UseCasesProxyModule.UPDATE_COVER_IMAGE_USECASES_PROXY,
 
         UseCasesProxyModule.ADD_PRODUCT_USECASES_PROXY,
+        UseCasesProxyModule.GET_PRODUCTS_USECASES_PROXY,
 
         UseCasesProxyModule.CHECK_INVENTORY_USECASES_PROXY,
 

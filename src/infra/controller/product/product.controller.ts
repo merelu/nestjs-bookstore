@@ -17,6 +17,7 @@ import {
   Param,
   ParseIntPipe,
   Post,
+  Query,
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
@@ -28,10 +29,12 @@ import {
 } from '@nestjs/swagger';
 import { AddProductUseCases } from '@usecases/product/add-product.usecases';
 import { CheckInventoryUseCases } from '@usecases/product/check-inventory.usecases';
+import { GetProductsUseCases } from '@usecases/product/get-products.usecases';
 import { DataSource } from 'typeorm';
 import { FormatException } from '../exception.format';
 import { InventoryPresenter } from '../inventory/presenter/inventory.presenter';
 import { AddProductDto } from './dto/add-book.dto';
+import { ProductPaginationDto } from './dto/product.pagination.dto';
 import { ProductDetailPresenter } from './presenter/product.presenter';
 
 @Controller('product')
@@ -52,8 +55,21 @@ export class ProductController {
     private readonly addProductUseCasesProxy: UseCaseProxy<AddProductUseCases>,
     @Inject(UseCasesProxyModule.CHECK_INVENTORY_USECASES_PROXY)
     private readonly checkInventoryUseCasesProxy: UseCaseProxy<CheckInventoryUseCases>,
+    @Inject(UseCasesProxyModule.GET_PRODUCTS_USECASES_PROXY)
+    private readonly getProductsUseCasesProxy: UseCaseProxy<GetProductsUseCases>,
     private readonly exceptionService: ExceptionService,
   ) {}
+
+  @Get('list')
+  @ApiOperation({ summary: '등록된 상품 리스트(Public) - pagination' })
+  @ApiResponseType(ProductDetailPresenter, true)
+  async getProducs(@Query() query: ProductPaginationDto) {
+    const result = await this.getProductsUseCasesProxy
+      .getInstance()
+      .getProductsWithPagination(query);
+    console.log(result);
+    return result.map((product) => new ProductDetailPresenter(product));
+  }
 
   @Get(':id/inventory')
   @ApiOperation({ summary: '상품 재고 확인(Seller)' })
