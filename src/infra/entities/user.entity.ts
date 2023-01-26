@@ -19,7 +19,6 @@ import { Point } from './point.entity';
 import { Product } from './product.entity';
 
 @Entity()
-@Index('User_PointId', ['pointId'], {})
 export class User extends CommonEntity implements IUserModel {
   @Column({ type: 'varchar', nullable: false, unique: true })
   email: string;

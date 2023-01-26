@@ -18,7 +18,7 @@ export class CoverImageModel extends CommonModel implements ICoverImage {
   data: Uint8Array;
   url?: string;
   uploaderId?: number;
-  uploader: UserModel;
+  uploader?: UserModel;
 }
 
 export class CreateCoverImageModel extends PickType(CoverImageModel, [

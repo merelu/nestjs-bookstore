@@ -42,12 +42,12 @@ export class DatabaseCoverImageRepository implements ICoverImageRepository {
     if (conn) {
       result = await conn.getRepository(CoverImage).findOne({
         where: { id },
-        select: ['id', 'filename', 'url'],
+        select: ['id', 'filename', 'url', 'uploaderId'],
       });
     } else {
       result = await this.coverImageEntityRepository.findOne({
         where: { id },
-        select: ['id', 'filename', 'url'],
+        select: ['id', 'filename', 'url', 'uploaderId'],
       });
     }
 
@@ -102,6 +102,8 @@ export class DatabaseCoverImageRepository implements ICoverImageRepository {
     result.data = data.data;
     result.url = data.url;
     result.book = data.book;
+    result.uploader = data.uploader;
+    result.uploaderId = data.uploaderId;
 
     result.createdAt = data.createdAt;
     result.updatedAt = data.updatedAt;

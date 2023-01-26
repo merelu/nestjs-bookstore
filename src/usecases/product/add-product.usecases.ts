@@ -68,6 +68,7 @@ export class AddProductUseCases {
     const result = await this.coverImageRepository.findOneByIdWithoutData(
       coverImageId,
     );
+    console.log(result);
     if (!result) {
       throw this.exceptionService.badRequestException({
         error_code: CommonErrorCodeEnum.INVALID_PARAM,

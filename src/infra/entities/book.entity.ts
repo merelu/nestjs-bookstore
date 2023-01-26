@@ -16,7 +16,6 @@ import { CoverImage } from './cover-image.entity';
 import { Product } from './product.entity';
 
 @Entity()
-@Index('Book_cover_image_id', ['coverImageId'], {})
 export class Book extends CommonEntity implements IBookModel {
   @Column({ type: 'varchar' })
   name: string;
