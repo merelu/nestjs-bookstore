@@ -12,8 +12,14 @@ export class AddCoverImageUseCases {
     private readonly config: IUrlConfig,
   ) {}
 
-  async execute(filename: string, dataBuffer: Buffer, conn: EntityManager) {
+  async execute(
+    userId: number,
+    filename: string,
+    dataBuffer: Buffer,
+    conn: EntityManager,
+  ) {
     const newCover = new CreateCoverImageModel();
+    newCover.uploaderId = userId;
     newCover.filename = filename;
     newCover.data = dataBuffer;
     newCover.url = `${this.config.getBaseUrl()}/book/cover`;

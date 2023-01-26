@@ -1,3 +1,4 @@
+import { PointLog } from '@infra/entities/point-log.entity';
 import { PickType } from '@nestjs/mapped-types';
 import { CommonModel } from '../common/common';
 import { UserModel } from './user';
@@ -10,6 +11,7 @@ export interface IPointModel {
 export class PointModel extends CommonModel implements IPointModel {
   user?: UserModel;
   point: number;
+  pointLogs?: PointLog[];
 }
 
 export class CreatePointModel extends PickType(PointModel, [

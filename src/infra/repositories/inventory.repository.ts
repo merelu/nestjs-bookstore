@@ -138,9 +138,11 @@ export class DatabaseInventoryRepository implements IInventoryRepository {
     const result = new InventoryModel();
 
     result.id = data.id;
+
     result.stock = data.stock;
     result.selledStock = data.selledStock;
     result.product = data.product;
+
     result.createdAt = data.createdAt;
     result.updatedAt = data.updatedAt;
     result.deletedAt = data.deletedAt;

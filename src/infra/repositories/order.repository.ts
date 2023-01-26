@@ -147,16 +147,19 @@ export class DatabaseOrderRepository implements IOrderRepository {
   private toOrder(data: Order): OrderModel {
     const result = new OrderModel();
     result.id = data.id;
+
     result.orderState = data.orderState;
     result.orderDate = data.orderDate;
     result.usePoint = data.usePoint;
     result.buyerId = data.buyerId;
     result.buyer = data.buyer;
+
     result.orderProducts = data.orderProducts;
 
     result.createdAt = data.createdAt;
     result.updatedAt = data.updatedAt;
     result.deletedAt = data.deletedAt;
+
     return result;
   }
 

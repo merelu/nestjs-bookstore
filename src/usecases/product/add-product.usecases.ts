@@ -26,7 +26,7 @@ export class AddProductUseCases {
   ) {}
 
   async execute(userId: number, data: AddProductDto, conn: EntityManager) {
-    await this.checkImage(data.coverImageId);
+    await this.checkImage(userId, data.coverImageId);
 
     const newAuthor = new CreateAuthorModel();
     newAuthor.name = data.authorName;
@@ -64,12 +64,20 @@ export class AddProductUseCases {
     return result;
   }
 
-  private async checkImage(id: number) {
-    const result = await this.coverImageRepository.findOneById(id);
+  private async checkImage(userId: number, coverImageId: number) {
+    const result = await this.coverImageRepository.findOneByIdWithoutData(
+      coverImageId,
+    );
     if (!result) {
       throw this.exceptionService.badRequestException({
         error_code: CommonErrorCodeEnum.INVALID_PARAM,
         error_text: 'id에 해당하는 커버 이미지가 없습니다.',
+      });
+    }
+    if (!result.uploaderId || result.uploaderId !== userId) {
+      throw this.exceptionService.forbiddenException({
+        error_code: CommonErrorCodeEnum.FORBIDDEN_REQUEST,
+        error_text: '사용 권한이 없는 이미지 입니다.',
       });
     }
     return result;

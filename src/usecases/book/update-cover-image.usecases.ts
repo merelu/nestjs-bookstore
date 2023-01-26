@@ -27,6 +27,8 @@ export class UpdateCoverImageUseCases {
       });
     }
 
+    await this.checkCoverImage(userId, product.book.coverImageId);
+
     await this.updateCoverImage(
       product.book.coverImageId,
       filename,
@@ -40,7 +42,7 @@ export class UpdateCoverImageUseCases {
   }
 
   private async getCoverImage(coverImageId: number, conn: EntityManager) {
-    const result = await this.coverImageRepository.findOneById(
+    const result = await this.coverImageRepository.findOneByIdWithoutData(
       coverImageId,
       conn,
     );
@@ -53,6 +55,19 @@ export class UpdateCoverImageUseCases {
     }
 
     return result;
+  }
+
+  private async checkCoverImage(userId: number, coverImageId: number) {
+    const result = await this.coverImageRepository.findOneByIdWithoutData(
+      coverImageId,
+    );
+
+    if (!result || result.uploaderId !== userId) {
+      throw this.exceptionService.forbiddenException({
+        error_code: CommonErrorCodeEnum.FORBIDDEN_REQUEST,
+        error_text: '수정 권한이 없는 이미지 입니다.',
+      });
+    }
   }
 
   private async checkProduct(userId: number, bookId: number) {

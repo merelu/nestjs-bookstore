@@ -1,6 +1,7 @@
 import { RoleEnum } from '@domain/common/enum/role.enum';
 import { OmitType, PickType } from '@nestjs/mapped-types';
 import { CommonModel } from '../common/common';
+import { CoverImageModel } from './cover-image';
 import { OrderModel } from './order';
 import { PointModel } from './point';
 import { ProductModel } from './product';
@@ -28,6 +29,7 @@ export class UserModel extends CommonModel implements IUserModel {
   point?: PointModel;
   products?: ProductModel[];
   orders?: OrderModel[];
+  coverImages?: CoverImageModel[];
 }
 
 export class UserModelWithoutPassword extends OmitType(UserModel, [

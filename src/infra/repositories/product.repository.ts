@@ -19,6 +19,38 @@ export class DatabaseProductRepository implements IProductRepository {
     @InjectRepository(Product)
     private readonly productEntityRepository: Repository<Product>,
   ) {}
+  async findDetailWithPagination(
+    page: number,
+    size: number,
+    requestedAt: Date,
+  ): Promise<ProductModel[]> {
+    const result = await this.productEntityRepository
+      .createQueryBuilder('product')
+      .select([
+        'product',
+        'book',
+        'inventory',
+        'authorBooks',
+        'author',
+        'seller',
+        'coverImage.url',
+      ])
+      .where('product.created_at < :requestedAt', {
+        requestedAt,
+      })
+      .orderBy('product.created_at', 'DESC')
+      .innerJoin('product.book', 'book')
+      .innerJoin('product.inventory', 'inventory')
+      .innerJoin('book.authorBooks', 'authorBooks')
+      .innerJoin('book.coverImage', 'coverImage')
+      .innerJoin('authorBooks.author', 'author')
+      .innerJoin('product.seller', 'seller')
+      .limit(size)
+      .offset(page * size)
+      .getMany();
+
+    return result.map((i) => this.toProduct(i));
+  }
   async findOneByQueryWithRelation(
     query: FindOptionsWhere<ProductModel>,
     relations: FindOptionsRelations<ProductModel>,
@@ -92,27 +124,41 @@ export class DatabaseProductRepository implements IProductRepository {
       result = await conn
         .getRepository(Product)
         .createQueryBuilder('product')
-        .addSelect(['coverImage.id', 'coverImage.url'])
-        .addSelect(['seller.id', 'seller.name', 'seller.email'])
+        .select([
+          'product',
+          'book',
+          'inventory',
+          'authorBooks',
+          'author',
+          'seller',
+          'coverImage.url',
+        ])
         .where('product.id = :id', { id })
-        .innerJoinAndSelect('product.book', 'book')
-        .innerJoinAndSelect('product.inventory', 'inventory')
-        .innerJoinAndSelect('book.authorBooks', 'authorBooks')
+        .innerJoin('product.book', 'book')
+        .innerJoin('product.inventory', 'inventory')
+        .innerJoin('book.authorBooks', 'authorBooks')
         .innerJoin('book.coverImage', 'coverImage')
-        .innerJoinAndSelect('authorBooks.author', 'author')
+        .innerJoin('authorBooks.author', 'author')
         .innerJoin('product.seller', 'seller')
         .getOne();
     } else {
       result = await this.productEntityRepository
         .createQueryBuilder('product')
-        .addSelect(['coverImage.id', 'coverImage.url'])
-        .addSelect(['seller.id', 'seller.name', 'seller.email'])
+        .select([
+          'product',
+          'book',
+          'inventory',
+          'authorBooks',
+          'author',
+          'seller',
+          'coverImage.url',
+        ])
         .where('product.id = :id', { id })
-        .innerJoinAndSelect('product.book', 'book')
-        .innerJoinAndSelect('product.inventory', 'inventory')
-        .innerJoinAndSelect('book.authorBooks', 'authorBooks')
+        .innerJoin('product.book', 'book')
+        .innerJoin('product.inventory', 'inventory')
+        .innerJoin('book.authorBooks', 'authorBooks')
         .innerJoin('book.coverImage', 'coverImage')
-        .innerJoinAndSelect('authorBooks.author', 'author')
+        .innerJoin('authorBooks.author', 'author')
         .innerJoin('product.seller', 'seller')
         .getOne();
     }
@@ -127,13 +173,16 @@ export class DatabaseProductRepository implements IProductRepository {
   private toProduct(data: Product): ProductModel {
     const result = new ProductModel();
     result.id = data.id;
+
     result.price = data.price;
     result.inventoryId = data.inventoryId;
     result.inventory = data.inventory;
     result.bookId = data.bookId;
     result.book = data.book;
+
     result.sellerId = data.sellerId;
     result.seller = data.seller;
+    result.orderProducts = data.orderProducts;
 
     result.createdAt = data.createdAt;
     result.updatedAt = data.updatedAt;

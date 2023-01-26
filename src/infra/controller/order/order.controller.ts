@@ -100,7 +100,7 @@ export class OrderController {
   @ApiOperation({ summary: '내 주문 목록(Customer)' })
   @AuthJwt(RolesGuard)
   @Roles(RoleEnum.CUSTOMER)
-  @ApiResponseType(OrderDetailPresenter)
+  @ApiResponseType(OrderDetailPresenter, true)
   @ApiForbiddenResponse({
     description: '확인 권한이 없을때',
     type: FormatException,

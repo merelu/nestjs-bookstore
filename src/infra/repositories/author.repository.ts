@@ -45,8 +45,10 @@ export class DatabaseAuthorRepository implements IAuthorRepository {
   private toAuthor(data: Author): AuthorModel {
     const result = new AuthorModel();
     result.id = data.id;
+
     result.name = data.name;
     result.authorBooks = data.authorBooks;
+
     result.createdAt = data.createdAt;
     result.updatedAt = data.updatedAt;
     result.deletedAt = data.deletedAt;

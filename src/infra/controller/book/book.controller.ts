@@ -74,14 +74,17 @@ export class BookController {
   @ApiBody({ type: UploadCoverImageDto })
   @UseInterceptors(FileInterceptor('image'))
   @ApiResponseType(UploadCoverImagePresenter)
-  async uploadCoverImage(@UploadedFile() image: Express.Multer.File) {
+  async uploadCoverImage(
+    @User() user: UserModelWithoutPassword,
+    @UploadedFile() image: Express.Multer.File,
+  ) {
     const connection = this.dataSource.createQueryRunner();
     await connection.connect();
     await connection.startTransaction();
     try {
       const result = await this.addCoverImageUseCasesProxy
         .getInstance()
-        .execute(image.originalname, image.buffer, connection.manager);
+        .execute(user.id, image.originalname, image.buffer, connection.manager);
 
       await connection.commitTransaction();
       return new UploadCoverImagePresenter(result);

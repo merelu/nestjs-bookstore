@@ -47,11 +47,14 @@ export class DatabaseBookRepository implements IBookRepository {
   private toBook(data: Book): BookModel {
     const result = new BookModel();
     result.id = data.id;
+
     result.name = data.name;
     result.description = data.description;
     result.coverImageId = data.coverImageId;
     result.coverImage = data.coverImage;
     result.authorBooks = data.authorBooks;
+    result.product = data.product;
+
     result.createdAt = data.createdAt;
     result.updatedAt = data.updatedAt;
     result.deletedAt = data.deletedAt;

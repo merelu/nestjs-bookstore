@@ -33,6 +33,7 @@ export class DatabasePointLogRepository implements IPointLogRepository {
     const result = new PointLogModel();
 
     result.id = data.id;
+
     result.content = data.content;
     result.action = data.action;
     result.addPoint = data.addPoint;

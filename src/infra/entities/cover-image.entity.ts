@@ -1,8 +1,10 @@
 import { BookModel } from '@domain/model/database/book';
 import { ICoverImage } from '@domain/model/database/cover-image';
-import { Column, Entity, OneToOne } from 'typeorm';
+import { UserModel } from '@domain/model/database/user';
+import { Column, Entity, ManyToOne, OneToOne } from 'typeorm';
 import { Book } from './book.entity';
 import { CommonEntity } from './common.entity';
+import { User } from './user.entity';
 
 @Entity()
 export class CoverImage extends CommonEntity implements ICoverImage {
@@ -11,6 +13,12 @@ export class CoverImage extends CommonEntity implements ICoverImage {
 
   @OneToOne(() => Book, (book) => book.coverImage, { nullable: true })
   book?: BookModel;
+
+  @Column({ type: 'integer', nullable: true })
+  uploaderId?: number;
+
+  @ManyToOne(() => User, (user) => user.coverImages, { nullable: true })
+  uploader?: UserModel;
 
   @Column({
     type: 'bytea',

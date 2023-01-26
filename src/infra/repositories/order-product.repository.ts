@@ -37,12 +37,15 @@ export class DatabaseOrderProductRepository implements IOrderProductRepository {
     const result = new OrderProductModel();
 
     result.id = data.id;
+
     result.orderCount = data.orderCount;
     result.price = data.price;
     result.orderId = data.orderId;
     result.order = data.order;
     result.productId = data.productId;
+
     result.product = data.product;
+
     result.createdAt = data.createdAt;
     result.updatedAt = data.updatedAt;
     result.deletedAt = data.deletedAt;

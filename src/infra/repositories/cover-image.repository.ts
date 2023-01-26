@@ -34,7 +34,7 @@ export class DatabaseCoverImageRepository implements ICoverImageRepository {
     }
   }
 
-  async findOneById(
+  async findOneByIdWithoutData(
     id: number,
     conn?: EntityManager,
   ): Promise<CoverImageModel | null> {
@@ -48,6 +48,27 @@ export class DatabaseCoverImageRepository implements ICoverImageRepository {
       result = await this.coverImageEntityRepository.findOne({
         where: { id },
         select: ['id', 'filename', 'url'],
+      });
+    }
+
+    if (!result) {
+      return null;
+    }
+
+    return this.toCoverIamge(result);
+  }
+  async findOneById(
+    id: number,
+    conn?: EntityManager,
+  ): Promise<CoverImageModel | null> {
+    let result: CoverImage | null = null;
+    if (conn) {
+      result = await conn.getRepository(CoverImage).findOne({
+        where: { id },
+      });
+    } else {
+      result = await this.coverImageEntityRepository.findOne({
+        where: { id },
       });
     }
 
@@ -76,9 +97,12 @@ export class DatabaseCoverImageRepository implements ICoverImageRepository {
   private toCoverIamge(data: CoverImage): CoverImageModel {
     const result = new CoverImageModel();
     result.id = data.id;
+
     result.filename = data.filename;
     result.data = data.data;
     result.url = data.url;
+    result.book = data.book;
+
     result.createdAt = data.createdAt;
     result.updatedAt = data.updatedAt;
     result.deletedAt = data.deletedAt;
@@ -89,6 +113,7 @@ export class DatabaseCoverImageRepository implements ICoverImageRepository {
   private toCoverImageEntity(data: CreateCoverImageModel): CoverImage {
     const result = new CoverImage();
     result.filename = data.filename;
+    result.uploaderId = data.uploaderId;
 
     return result;
   }

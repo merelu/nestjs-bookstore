@@ -10,6 +10,11 @@ export interface ICoverImageRepository {
     conn: EntityManager,
   ): Promise<CoverImageModel>;
 
+  findOneByIdWithoutData(
+    id: number,
+    conn?: EntityManager,
+  ): Promise<CoverImageModel | null>;
+
   findOneById(
     id: number,
     conn?: EntityManager,

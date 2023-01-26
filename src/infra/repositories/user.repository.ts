@@ -85,14 +85,20 @@ export class DatabaseUserRepository implements IUserRepository {
     const result = new UserModel();
 
     result.id = data.id;
+
     result.name = data.name;
     result.zipCode = data.zipCode;
     result.address = data.address;
     result.email = data.email;
     result.password = data.password;
+
     result.role = data.role;
     result.pointId = data.pointId;
     result.point = data.point;
+    result.orders = data.orders;
+    result.products = data.products;
+
+    result.coverImages = data.coverImages;
 
     result.createdAt = data.createdAt;
     result.updatedAt = data.updatedAt;

@@ -97,9 +97,10 @@ export class DatabasePointRepository implements IPointRepository {
     const result = new PointModel();
 
     result.id = data.id;
-    result.point = data.point;
 
+    result.point = data.point;
     result.user = data.user;
+    result.pointLogs = data.pointLogs;
 
     result.createdAt = data.createdAt;
     result.updatedAt = data.updatedAt;
